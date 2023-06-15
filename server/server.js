@@ -11,6 +11,11 @@ app.use(express.json());
 //db connect
 const db = require("./models");
 const Role = db.role
+
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to your application." });
+});
+
 // Routes
 // const postsRoutes = require("./routes/Posts");
 // app.use("/api/posts", postsRoutes);
