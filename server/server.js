@@ -4,11 +4,13 @@ const dotenv = require("dotenv").config();
 const cors = require("cors");
 let secret = process.env.SECRET;
 
+
 app.use(express.json());
-app.use(cors({ origin: "*" }));
+//app.use(cors({ origin: "*" }));
 
 //db connect
 const db = require("./models");
+const Role = db.role
 // Routes
 // const postsRoutes = require("./routes/Posts");
 // app.use("/api/posts", postsRoutes);
@@ -16,8 +18,21 @@ const db = require("./models");
 // const authRoutes = require("./routes/Auth");
 // app.use("/api/auth", authRoutes);
 
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync({force: true}).then(() => {
   app.listen(3001, () => {
-    console.log("aplikacija pokrenuta, drop db true");
+    console.log("aplikacija pokrenuta 3001, drop db true");
+    initial();
   });
-});
+}
+);
+function initial() {
+  Role.create({
+    id: 1,
+    name: "user"
+  });
+ 
+  Role.create({
+    id: 3,
+    name: "admin"
+  });
+}

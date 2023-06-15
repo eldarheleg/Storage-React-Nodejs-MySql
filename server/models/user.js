@@ -19,4 +19,6 @@ module.exports = (seqelize, DataTypes) => {
       allowNull: false,
     },
   });
+  
+  return User;
 };

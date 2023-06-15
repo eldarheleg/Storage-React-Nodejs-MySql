@@ -1,4 +1,4 @@
-const user = require('./users')
+
 
 module.exports = (sequelize, DataTypes) => {
   const Employee = sequelize.define("Employee", {
@@ -36,7 +36,5 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
   });
-//   Employee.belongsTo(User, {
-//     foreignKey: "userId",
-//   });
+  return Employee
 };
