@@ -1,48 +1,57 @@
 const jwt = require("jsonwebtoken");
-const config = process.env
+const config = process.env;
 const db = require("../models");
 const User = db.user;
 
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
-
+  console.log(token)
   if (!token) {
     return res.status(403).send({
-      message: "A token is required for authentication"
+      message: "A token is required for authentication",
     });
   }
 
-  jwt.verify(token, config.SECRET_KEY, (err, decoded) => {
+  jwt.verify(token, config.SECRET_KEY, (err, decodedTok) => {
     if (err) {
       return res.status(401).send({
-        message: "Unauthorized!"
+        message: "Unauthorized!",
       });
     }
-    req.userId = decoded.id;
+    req.userId = decodedTok.id;
     next();
   });
 };
 
-isAdmin = (req, res, next) => {
-  User.findByPk(req.userId).then(user => {
-    user.getRoles().then(roles => {
-      for (let i = 0; i < roles.length; i++) {
-        if (roles[i].name === "admin") {
-          next();
-          return;
-        }
-      }
-
-      res.status(403).send({
-        message: "Require Admin Role!"
-      });
-      return;
-    });
+const isAdmin = async (req, res, next) => {
+  const token = req.headers.authorization;
+  console.log(token)
+  let userID = null;
+  let good = false;
+  if (!token)
+    res.status(401).json({ message: "You are not authorized for this route." });
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+    good = false;
+    userID = null;
+    if (err)
+      return res
+        .status(401)
+        .json({ message: "You are not authorized for this route." });
+    good = true;
+    userID = decodedToken.id;
   });
+  if (good) {
+    const user = await User.findById(userID);
+    // console.log(user.role);
+    if (user?.role === "ADMIN") next();
+    else
+      res
+        .status(403)
+        .json({ message: "You are not authorized for this route." });
+  }
 };
 
-const auth = {
-  verifyToken: verifyToken,
-  isAdmin: isAdmin,
+module.exports = {
+  verifyToken,
+  isAdmin,
 };
-module.exports = auth;

@@ -1,7 +1,7 @@
 
 
 module.exports = (sequelize, DataTypes) => {
-  const Employee = sequelize.define("Employee", {
+  const Employee = sequelize.define("employee", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     phoneNumber: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     adress: {
       type: DataTypes.STRING,
@@ -28,12 +28,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     start_date: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.DATE,
       allowNull: false,
     },
     fired_date: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   });
   return Employee
