@@ -21,9 +21,6 @@ app.get("/", (req, res) => {
 const userRoutes = require('./routes/userRoutes')
 app.use('/users',userRoutes)
 
-// const authRoutes = require("./routes/Auth");
-// app.use("/api/auth", authRoutes);
-
 db.sequelize.sync({force: true}).then(() => {
   app.listen(3001, () => {
     console.log("aplikacija pokrenuta 3001, drop db true");
@@ -46,5 +43,19 @@ function initial() {
     username: "admin",
     password: "admin",
     role: db.ROLES[1]
+  });
+  Employee.create({
+    id: 2,
+    firstName: "Elda",
+    lastName: "Hele",
+    adress: "puti",
+    email: "eldar@gmail.co",
+    start_date: Date.now(),
+  });
+ 
+  User.create({
+    employeeId: 2,
+    username: "user",
+    password: "user",
   });
 }

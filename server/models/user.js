@@ -13,7 +13,7 @@ module.exports = (seqelize, DataTypes) => {
     role: {
       type: DataTypes.STRING,
       allowNull: false,
-      default: 'USER'
+      defaultValue: 'USER'
     }
   });
   
