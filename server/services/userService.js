@@ -1,70 +1,70 @@
 const db = require("../models");
 const config = process.env;
 const User = db.user;
-const Role = db.role;
-
-const Op = db.Sequelize.Op;
+const Employee = db.employee;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcrypt");
+const { options } = require("../routes/userRoutes");
 
-exports.signup = (req, res) => {
+exports.signup = async (req, res) => {
   const today = new Date();
-  const employeeData = {
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    email: req.body.email,
-    password: req.body.password,
-    created: today,
-  };
-  console.log("----------------------------"+employeeData)
-
-  User.findOne({
+  const { firstName, lastName, adress, email, username, password } = req.body;
+  const newEmployee = Employee.create({
+    firstName,
+    lastName,
+    adress,
+    email,
+    start_date: today,
+  });
+  // const generateUser = User.create({
+  //   username,
+  //   password: await bcrypt.hash(password, 10),
+  // });
+  const existUser = await User.findOne({
     where: {
-      email: req.body.email,
+      username: username,
     },
-  })
-    //TODO bcrypt
-    .then((user) => {
-      if (!user) {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-          userData.password = hash;
-          User.create(userData)
-            .then((user) => {
-              res.json({ status: user.email + "Registered!" });
-            })
-            .catch((err) => {
-              res.send("error: " + err);
-            });
+  });
+
+  if (!existUser) {
+    try {
+      Employee.afterCreate(async (employee, options) => {
+        await User.create({
+          username,
+          password: await bcrypt.hash(password, 10),
+          employeeId: employee.id
         });
-      } else {
-        res.json({ error: "User already exists" });
-      }
-    })
-    .catch((err) => {
-      res.send("error: " + err);
-    });
+      });
+      console.log("User created successfully!");
+    } catch (error) {
+      console.error("Error creating User:", error);
+    }
+  } else {
+    res.json({ error: "User already exists" });
+  }
+  return res.status(200).json({ message: "success" });
 };
 
 exports.signin = (req, res) => {
   User.findOne({
     where: {
-      email: req.body.email
-    }
+      email: req.body.email,
+    },
   })
-    .then(user => {
+    .then((user) => {
       if (user) {
         if (bcrypt.compareSync(req.body.password, user.password)) {
           let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
-            expiresIn: 1440
-          })
-          res.send(token)
+            expiresIn: 1440,
+          });
+          res.send(token);
         }
       } else {
-        res.status(400).json({ error: 'User does not exist' })
+        res.status(400).json({ error: "User does not exist" });
       }
     })
-    .catch(err => {
-      res.status(400).json({ error: err })
-    })
-}
+    .catch((err) => {
+      res.status(400).json({ error: err });
+    });
+};

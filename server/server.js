@@ -2,11 +2,17 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv").config();
 const cors = require("cors");
+const bodyParser = require('body-parser')
 let secret = process.env.SECRET;
 
+// parse application/json
+app.use(bodyParser.json())
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
 
-app.use(express.json());
-//app.use(cors());
+
+// app.use(express.json());
+// app.use(cors());
 
 //db connect
 const db = require("./models");

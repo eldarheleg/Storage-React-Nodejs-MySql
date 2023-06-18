@@ -21,15 +21,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     adress: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true
     },
     start_date: {
       type: DataTypes.DATE,
-      allowNull: false,
+      default: Date.now()
     },
     fired_date: {
       type: DataTypes.DATE,
