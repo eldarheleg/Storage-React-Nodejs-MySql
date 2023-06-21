@@ -9,17 +9,7 @@ var bcrypt = require("bcrypt");
 exports.signup = async (req, res) => {
   const today = new Date();
   const { firstName, lastName, adress, email, username, password } = req.body;
-  const newEmployee = Employee.create({
-    firstName,
-    lastName,
-    adress,
-    email,
-    start_date: today,
-  });
-  // const generateUser = User.create({
-  //   username,
-  //   password: await bcrypt.hash(password, 10),
-  // });
+
   const existUser = await User.findOne({
     where: {
       username: username,
@@ -28,6 +18,13 @@ exports.signup = async (req, res) => {
 
   if (!existUser) {
     try {
+      Employee.create({
+        firstName,
+        lastName,
+        adress,
+        email,
+        start_date: today,
+      });
       Employee.afterCreate(async (employee, options) => {
         await User.create({
           username,
@@ -58,7 +55,7 @@ exports.signin = async (req, res) => {
     // Check if the password is correct
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Password is not correct! " });
+      return res.status(401).json({ message: "Password is not correct!" });
     }
 
     // Generate a JWT token
