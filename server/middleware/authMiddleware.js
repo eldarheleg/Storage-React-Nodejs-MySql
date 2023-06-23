@@ -24,30 +24,30 @@ verifyToken = (req, res, next) => {
 };
 
 const isAdmin = async (req, res, next) => {
-  const token = req.headers.authorization;
+  const token = req.headers['x-access-token'];
   console.log(token)
   let userID = null;
   let good = false;
   if (!token)
-    res.status(401).json({ message: "You are not authorized for this route." });
+    res.status(401).json({ message: "1 You are not authorized for this route." });
   jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
     good = false;
     userID = null;
     if (err)
       return res
         .status(401)
-        .json({ message: "You are not authorized for this route." });
+        .json({ message: "2 You are not authorized for this route." });
     good = true;
     userID = decodedToken.id;
   });
   if (good) {
     const user = await User.findById(userID);
-    // console.log(user.role);
+    //  console.log(user.role);
     if (user?.role === "ADMIN") next();
     else
       res
         .status(403)
-        .json({ message: "You are not authorized for this route." });
+        .json({ message: "3 You are not authorized for this route." });
   }
 };
 
