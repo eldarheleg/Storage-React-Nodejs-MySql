@@ -82,9 +82,18 @@ exports.signin = async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = createToken(username);
+    const token = createToken({username: user.username,role: user.role});
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      maxAge: maxAge * 1000, // 3hrs in ms
+    });
 
-    res.status(200).json({ token });
+    res.status(201).json({
+      message: "User successfully logged",
+      user: user.username,
+      role: user.role,
+      token: token,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -101,9 +110,10 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getOne = async (req, res) => {
-  const userID = req.params.id;
+  const username = req.params.username;
   try {
-    const employee = await Employee.findByPk(userID);
+    const user = await User.findByPk(username);
+    const employee = await Employee.findByPk(user.employeeId);
     if (employee) {
       res.json(employee);
     } else {
