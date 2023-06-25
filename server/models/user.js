@@ -13,7 +13,7 @@ module.exports = (seqelize, DataTypes) => {
       type: DataTypes.ENUM("USER", "ADMIN"),
       allowNull: false,
       defaultValue: "USER",
-    }
+    },
   });
 
   return User;

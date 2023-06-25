@@ -1,11 +1,9 @@
 const jwt = require("jsonwebtoken");
 const config = process.env;
-const db = require("../models/connection");
-const User = db.user;
 
-verifyToken = (req, res, next) => {
-  let token = req.headers["x-access-token"];
-  console.log(token)
+const tokenAuth = (req, res, next) => {
+  const token = req.cookies.jwt;
+  //console.log(token);
   if (!token) {
     return res.status(403).send({
       message: "A token is required for authentication",
@@ -18,40 +16,37 @@ verifyToken = (req, res, next) => {
         message: "Unauthorized!",
       });
     }
-    req.userId = decodedTok.id;
+    req.username = decodedTok.username;
     next();
   });
 };
 
 const isAdmin = async (req, res, next) => {
-  const token = req.headers['x-access-token'];
-  console.log(token)
-  let userID = null;
-  let good = false;
+  const token = req.cookies.jwt;
+  //console.log(token);
   if (!token)
-    res.status(401).json({ message: "1 You are not authorized for this route." });
-  jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
-    good = false;
-    userID = null;
-    if (err)
+    res
+      .status(401)
+      .json({ message: "1 You are not authorized for this route." });
+  jwt.verify(token, process.env.SECRET_KEY, async (err, decodedToken) => {
+    console.log(decodedToken.username, decodedToken.role);
+    if (err) {
       return res
         .status(401)
         .json({ message: "2 You are not authorized for this route." });
-    good = true;
-    userID = decodedToken.id;
+    } else {
+      if (decodedToken.role != "ADMIN") {
+        return res
+          .status(401)
+          .json({ message: "3 You are not authorized for this route." });
+      } else {
+        next();
+      }
+    }
   });
-  if (good) {
-    const user = await User.findById(userID);
-    //  console.log(user.role);
-    if (user?.role === "ADMIN") next();
-    else
-      res
-        .status(403)
-        .json({ message: "3 You are not authorized for this route." });
-  }
 };
 
 module.exports = {
-  verifyToken,
+  tokenAuth,
   isAdmin,
 };

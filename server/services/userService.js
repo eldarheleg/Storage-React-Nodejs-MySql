@@ -1,16 +1,23 @@
 const db = require("../models/connection");
-const config = process.env;
+var jwt = require("jsonwebtoken");
+var bcrypt = require("bcrypt");
+
+const maxAge = 3 * 60 * 60;
 const User = db.user;
 const Employee = db.employee;
 
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcrypt");
-const employee = require("../models/employee");
+const createToken = (object) => {
+  return jwt.sign(object, process.env.SECRET_KEY, {
+    expiresIn: maxAge,
+  });
+};
 
 exports.signup = async (req, res) => {
   const today = new Date();
-  const { firstName, lastName, adress, email, username, password } = req.body;
+  const { firstName, lastName, adress, email, username, password, role } =
+    req.body;
 
+  //check user existence
   const existUser = await User.findOne({
     where: {
       username: username,
@@ -19,6 +26,7 @@ exports.signup = async (req, res) => {
 
   if (!existUser) {
     try {
+      //create employee then create user based on employee
       await Employee.create({
         firstName,
         lastName,
@@ -29,18 +37,32 @@ exports.signup = async (req, res) => {
         User.create({
           username: username,
           password: await bcrypt.hash(password, 10),
+          role,
           employeeId: employee.id,
+        }).then((user) => {
+          //then create token for reg user
+          const token = createToken({
+            username: user.username,
+            role: user.role,
+          });
+          res.cookie("jwt", token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000, // 3hrs in ms
+          });
+          res.status(201).json({
+            message: "User successfully created",
+            user: user.username,
+            role: user.role,
+            token: token,
+          });
         });
       });
-
-      console.log("User created successfully!");
     } catch (error) {
       console.error("Error creating User:", error);
     }
   } else {
     res.json({ error: "User already exists" });
   }
-  return res.status(200).json({ message: "success" });
 };
 
 exports.signin = async (req, res) => {
@@ -60,14 +82,34 @@ exports.signin = async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      process.env.SECRET_KEY
-    );
+    const token = createToken(username);
 
     res.status(200).json({ token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getAll = async (req, res) => {
+  try {
+    const employees = await Employee.findAll();
+    res.json(employees);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch employees" });
+  }
+};
+
+exports.getOne = async (req, res) => {
+  const userID = req.params.id;
+  try {
+    const employee = await Employee.findByPk(userID);
+    if (employee) {
+      res.json(employee);
+    } else {
+      res.status(404).json({ error: "Employee not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch employee" });
   }
 };

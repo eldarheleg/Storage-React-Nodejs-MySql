@@ -20,7 +20,6 @@ sequelize.beforeConnect(async () => {
     password: password,
   });
   await connection.query(`CREATE DATABASE IF NOT EXISTS \`${databaseName}\`;`);
-  //config.database = process.env.DB_NAME;
 });
 
 const db = {};
@@ -33,12 +32,22 @@ db.user = require("./user")(sequelize, Sequelize);
 db.employee = require("./employee")(sequelize, Sequelize);
 db.product = require("./product")(sequelize, Sequelize);
 db.process = require("./process")(sequelize, Sequelize);
+db.processItem = require("./processItem")(sequelize, Sequelize);
 db.material = require("./material")(sequelize, Sequelize);
 db.supplier = require("./supplier")(sequelize, Sequelize);
 
 //associations
-db.employee.hasOne(db.user, { foreignKey: "employeeId" , onUpdate: 'CASCADE'});
+db.employee.hasOne(db.user, { foreignKey: "employeeId", onUpdate: "CASCADE" });
 db.user.belongsTo(db.employee, { foreignKey: "employeeId" });
+
+db.supplier.hasMany(db.material, { foreignKey: "supplierId" });
+db.material.belongsTo(db.supplier);
+
+db.process.hasMany(db.product, { foreignKey: "processId" });
+db.product.belongsTo(db.process);
+
+db.material.hasMany(db.processItem, { foreignKey: "materialId" });
+db.processItem.belongsTo(db.material);
 
 // ---------WITH CREATED DATABASE---------
 // const sequelize = new Sequelize(
