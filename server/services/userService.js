@@ -1,10 +1,11 @@
-const db = require("../models");
+const db = require("../models/connection");
 const config = process.env;
 const User = db.user;
 const Employee = db.employee;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcrypt");
+const employee = require("../models/employee");
 
 exports.signup = async (req, res) => {
   const today = new Date();
@@ -18,20 +19,20 @@ exports.signup = async (req, res) => {
 
   if (!existUser) {
     try {
-      Employee.create({
+      await Employee.create({
         firstName,
         lastName,
         adress,
         email,
         start_date: today,
-      });
-      Employee.afterCreate(async (employee, options) => {
-        await User.create({
-          username,
+      }).then(async (employee) => {
+        User.create({
+          username: username,
           password: await bcrypt.hash(password, 10),
           employeeId: employee.id,
         });
       });
+
       console.log("User created successfully!");
     } catch (error) {
       console.error("Error creating User:", error);

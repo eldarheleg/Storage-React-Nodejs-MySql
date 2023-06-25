@@ -4,7 +4,7 @@ const mysql = require("mysql2/promise");
 const Sequelize = require("sequelize");
 const databaseName = "storage";
 
-const { host, dialect, username, password, database } = dbConfig.development;
+const { host, dialect, username, password } = dbConfig.development;
 
 // connect to db
 const sequelize = new Sequelize(databaseName, username, password, {
@@ -13,7 +13,7 @@ const sequelize = new Sequelize(databaseName, username, password, {
 });
 
 // create db if it doesn't already exist
-sequelize.beforeConnect(async (config) => {
+sequelize.beforeConnect(async () => {
   const connection = await mysql.createConnection({
     host: host,
     user: username,
@@ -31,12 +31,14 @@ db.sequelize = sequelize;
 // init models and add them to the exported db object
 db.user = require("./user")(sequelize, Sequelize);
 db.employee = require("./employee")(sequelize, Sequelize);
+db.product = require("./product")(sequelize, Sequelize);
+db.process = require("./process")(sequelize, Sequelize);
+db.material = require("./material")(sequelize, Sequelize);
+db.supplier = require("./supplier")(sequelize, Sequelize);
 
 //associations
-db.employee.hasOne(db.user, { foreignKey: "employeeId" });
+db.employee.hasOne(db.user, { foreignKey: "employeeId" , onUpdate: 'CASCADE'});
 db.user.belongsTo(db.employee, { foreignKey: "employeeId" });
-
-db.ROLES = ["USER", "ADMIN"];
 
 // ---------WITH CREATED DATABASE---------
 // const sequelize = new Sequelize(

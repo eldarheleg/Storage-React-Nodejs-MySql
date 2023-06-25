@@ -1,33 +1,42 @@
 module.exports = (sequelize, DataTypes) => {
-  const Employee = sequelize.define("employee", {
+  const Supplier = sequelize.define("supplier", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    firstName: {
+    supplierName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    lastName: {
-      type: DataTypes.STRING,
+    jib: {
+      type: DataTypes.INTEGER(13),
+      unique: true,
+      allowNull: false,
+    },
+    pib: {
+      type: DataTypes.INTEGER(12),
+      unique: true,
       allowNull: false,
     },
     phoneNumber: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       allowNull: true,
+      validate: {
+        isNumeric: true,
+      },
     },
-    adress: {
+    contactPerson: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
-    email: {
+    supplierEmail: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: true
-      }
+        isEmail: true,
+      },
     },
     start_date: {
       type: DataTypes.DATE,
@@ -38,5 +47,5 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
   });
-  return Employee;
+  return Supplier;
 };

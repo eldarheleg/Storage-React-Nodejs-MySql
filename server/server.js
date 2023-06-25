@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // app.use(cors());
 
 //db connect
-const db = require("./models");
+const db = require("./models/connection");
 const Employee = db.employee
 const User = db.user
 
@@ -35,33 +35,32 @@ db.sequelize.sync({force: true}).then(() => {
 }
 );
 function initial() {
-  Employee.create({
-    id: 1,
-    firstName: "Eldar",
-    lastName: "Heleg",
-    adress: "putis",
-    email: "eldar@gmail.com",
-    start_date: Date.now(),
-  });
- 
-  User.create({
-    employeeId: 1,
-    username: "admin",
-    password: "admin",
-    role: db.ROLES[1]
-  });
-  Employee.create({
-    id: 2,
-    firstName: "Elda",
-    lastName: "Hele",
-    adress: "puti",
-    email: "eldar@gmail.co",
-    start_date: Date.now(),
-  });
- 
-  User.create({
-    employeeId: 2,
-    username: "user",
-    password: "user",
-  });
+  // User.create({
+  //   employeeId: 1,
+  //   username: "admin",
+  //   password: "admin",
+  //   role: "ADMIN"
+  // });
+  // Employee.create({
+  //   firstName: "Eldar",
+  //   lastName: "Heleg",
+  //   adress: "putis",
+  //   email: "eldar@gmail.com",
+  //   start_date: Date.now(),
+  // });
+
+  // Employee.create({
+  //   id: 2,
+  //   firstName: "Elda",
+  //   lastName: "Hele",
+  //   adress: "puti",
+  //   email: "eldar@gmail.co",
+  //   start_date: Date.now(),
+  // });
+
+  // User.create({
+  //   employeeId: 2,
+  //   username: "user",
+  //   password: "user",
+  // });
 }

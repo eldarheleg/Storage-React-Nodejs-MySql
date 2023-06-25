@@ -1,4 +1,3 @@
-
 module.exports = (seqelize, DataTypes) => {
   const User = seqelize.define("user", {
     username: {
@@ -11,11 +10,11 @@ module.exports = (seqelize, DataTypes) => {
       allowNull: true,
     },
     role: {
-      type: DataTypes.ENUM('USER', 'ADMIN'),
+      type: DataTypes.ENUM("USER", "ADMIN"),
       allowNull: false,
-      defaultValue: 'USER'
+      defaultValue: "USER",
     }
   });
-  
+
   return User;
 };
