@@ -65,7 +65,7 @@ exports.signup = async (req, res) => {
   }
 };
 
-exports.signin = async (req, res) => {
+exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
@@ -99,6 +99,33 @@ exports.signin = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.logout = async (req, res) => {
+  res.clearCookie('jwt');
+
+  res.json({ message: 'Logged out successfully' });
+}
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { username } = req.params
+    const { currentPass, newPass } = req.body
+    const user = await user.findByPk(username)
+
+    if (!user) res.status(404).json({ error: "User not found" })
+
+    const isMatch = await user.comparePassword(currentPass)
+
+    if (!isMatch) res.status(401).json({ error: "Current pass dont match" })
+    
+    user.password = newPass
+    await user.save()
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    res.status(500).json({error: "failed to update pass"})
+  }
+}
 
 exports.getAll = async (req, res) => {
   try {

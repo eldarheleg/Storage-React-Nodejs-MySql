@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 
@@ -9,6 +10,7 @@ app.use(cookieParser());
 // parse json
 app.use(express.json());
 
+app.use(cors());
 //db connect
 const db = require("./models/connection");
 
@@ -18,7 +20,7 @@ app.get("/", (req, res) => {
 
 // Routes
 const userRoutes = require("./routes/userRoutes");
-app.use("/users", userRoutes);
+app.use("/api/users", userRoutes);
 
 db.sequelize.sync().then(() => {
   app.listen(3001, () => {
