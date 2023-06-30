@@ -14,7 +14,7 @@ const createToken = (object) => {
 
 exports.signup = async (req, res) => {
   const today = new Date();
-  const { firstName, lastName, adress, email, username, password, role } =
+  const { firstName, lastName, address, email, username, password, role } =
     req.body;
 
   //check user existence
@@ -30,7 +30,7 @@ exports.signup = async (req, res) => {
       await Employee.create({
         firstName,
         lastName,
-        adress,
+        address,
         email,
         start_date: today,
       }).then(async (employee) => {

@@ -29,8 +29,8 @@ function Login() {
       .post("http://localhost:3001/api/users/login", data)
       .then((response) => {
         let resData = response.data;
-        console.log(resData)
-        localStorage.setItem("accessToken", resData.accessToken);
+        console.log(resData);
+        localStorage.setItem("accessToken", resData.token);
         setAuthState({
           //id: resData.id,
           username: resData.username,
@@ -50,7 +50,7 @@ function Login() {
 
   return (
     <section className="vh-100">
-       <ToastContainer />
+      <ToastContainer />
       <div className="container-fluid h-custom mb-4">
         <div className="row d-flex justify-content-center align-items-center h-100">
           <div className="col-md-9 col-lg-6 col-xl-5">
@@ -105,7 +105,7 @@ function Login() {
       </div>
       <div className="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary fixed-bottom">
         <div className="text-white mb-3 mb-md-0">
-          Copyright © 2020. All rights reserved.
+          Copyright © 2023. All rights reserved.
         </div>
       </div>
     </section>

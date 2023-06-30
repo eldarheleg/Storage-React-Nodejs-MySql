@@ -2,12 +2,12 @@ import "./App.css";
 import Nav from "./layout/Navigation";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home/Home";
-import Registration from "./pages/Registration";
+import Registration from "./pages/Registration/Registration";
 import PageNotFound from "./pages/PageNotFound";
 import { AuthContext } from "./helpers/AuthContext";
 import { useEffect, useState } from "react";
 import Login from "./pages/Login/Login";
-import Employees from "./pages/Employees";
+import Employees from "./pages/Employees/Employees";
 import axios from "axios";
 import Products from "./pages/Products";
 

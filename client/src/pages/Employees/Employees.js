@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { AuthContext } from "../helpers/AuthContext";
+import { AuthContext } from "../../helpers/AuthContext";
 
 function Employees() {
   const authState = useContext(AuthContext);
