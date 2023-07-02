@@ -14,7 +14,7 @@ function Home() {
           </p>
           <div className="d-flex flex-row mb-3 justify-content-around">
             <Link
-              to={"/registration"}
+              to={"/registration/admin"}
               className="p-2 btn btn-primary btn-block"
             >
               Registration

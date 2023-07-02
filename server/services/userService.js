@@ -16,52 +16,66 @@ exports.signup = async (req, res) => {
   const today = new Date();
   const { firstName, lastName, address, email, username, password, role } =
     req.body;
+  let transactions = await db.sequelize.transaction();
 
   //check user existence
   const existUser = await User.findOne({
     where: {
       username: username,
     },
+    //transaction: transactions,
   });
 
   if (!existUser) {
     try {
       //create employee then create user based on employee
-      await Employee.create({
-        firstName,
-        lastName,
-        address,
-        email,
-        start_date: today,
-      }).then(async (employee) => {
-        User.create({
+      const newEmployee = await Employee.create(
+        {
+          firstName,
+          lastName,
+          address,
+          email,
+          start_date: today,
+        },
+        { transactions }
+      );
+      const newUser = await User.create(
+        {
           username: username,
           password: await bcrypt.hash(password, 10),
           role,
-          employeeId: employee.id,
-        }).then((user) => {
-          //then create token for reg user
-          const token = createToken({
-            username: user.username,
-            role: user.role,
-          });
-          res.cookie("jwt", token, {
-            httpOnly: true,
-            maxAge: maxAge * 1000, // 3hrs in ms
-          });
-          res.status(201).json({
-            message: "User successfully created",
-            user: user.username,
-            role: user.role,
-            token: token,
-          });
-        });
+          employeeId: newEmployee.id,
+        },
+        { transactions }
+      );
+
+      //then create token for reg user
+      const token = createToken({
+        username: newUser.username,
+        role: newUser.role,
       });
+      
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        maxAge: maxAge * 1000, // 3hrs in ms
+      });
+
+      res.status(201).json({
+        message: "User successfully created",
+        user: newUser.username,
+        role: newUser.role,
+        token: token,
+      });
+
+      await transactions.commit();
     } catch (error) {
-      console.error("Error creating User:", error);
+      console.error("Error creating User:", error.parent.sqlMessage);
+      res.status(500).json({ error: error.parent.errno });
+      await transactions.rollback();
     }
   } else {
-    res.json({ error: "User already exists" });
+    await transactions.rollback();
+    res.status(500).json({ error: "User already exists" });
   }
 };
 
@@ -82,7 +96,7 @@ exports.login = async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = createToken({username: user.username,role: user.role});
+    const token = createToken({ username: user.username, role: user.role });
     res.cookie("jwt", token, {
       httpOnly: true,
       maxAge: maxAge * 1000, // 3hrs in ms
@@ -101,31 +115,31 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  res.clearCookie('jwt');
+  res.clearCookie("jwt");
 
-  res.json({ message: 'Logged out successfully' });
-}
+  res.json({ message: "Logged out successfully" });
+};
 
 exports.changePassword = async (req, res) => {
   try {
-    const { username } = req.params
-    const { currentPass, newPass } = req.body
-    const user = await user.findByPk(username)
+    const { username } = req.params;
+    const { currentPass, newPass } = req.body;
+    const user = await user.findByPk(username);
 
-    if (!user) res.status(404).json({ error: "User not found" })
+    if (!user) res.status(404).json({ error: "User not found" });
 
-    const isMatch = await user.comparePassword(currentPass)
+    const isMatch = await user.comparePassword(currentPass);
 
-    if (!isMatch) res.status(401).json({ error: "Current pass dont match" })
-    
-    user.password = newPass
-    await user.save()
+    if (!isMatch) res.status(401).json({ error: "Current pass dont match" });
 
-    res.json({ message: 'Password updated successfully' });
+    user.password = newPass;
+    await user.save();
+
+    res.json({ message: "Password updated successfully" });
   } catch (error) {
-    res.status(500).json({error: "failed to update pass"})
+    res.status(500).json({ error: "failed to update pass" });
   }
-}
+};
 
 exports.getAll = async (req, res) => {
   try {
