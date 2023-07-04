@@ -10,17 +10,25 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     jib: {
-      type: DataTypes.INTEGER(13),
+      type: DataTypes.STRING(13),
       unique: true,
       allowNull: false,
+      validate: {
+        isNumeric: true,
+        len: [0,13]
+      },
     },
     pib: {
-      type: DataTypes.INTEGER(12),
+      type: DataTypes.STRING(12),
       unique: true,
       allowNull: false,
+      validate: {
+        isNumeric: true,
+        len: [0,12]
+      },
     },
     phoneNumber: {
-      type: DataTypes.DOUBLE,
+      type: DataTypes.BIGINT,
       allowNull: true,
       validate: {
         isNumeric: true,
@@ -40,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     start_date: {
       type: DataTypes.DATE,
-      default: Date.now(),
+      default: DataTypes.NOW,
     },
     fired_date: {
       type: DataTypes.DATE,

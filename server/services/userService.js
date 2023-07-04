@@ -54,11 +54,19 @@ exports.signup = async (req, res) => {
         username: newUser.username,
         role: newUser.role,
       });
-      
+
       res.cookie("jwt", token, {
         httpOnly: true,
         maxAge: maxAge * 1000, // 3hrs in ms
       });
+      // res.cookie("jwt", token, {
+      //   httpOnly: true,
+      //   maxAge: maxAge * 1000, // 3hrs in ms
+      // });
+      // res.cookie("jwt", token, {
+      //   httpOnly: true,
+      //   maxAge: maxAge * 1000, // 3hrs in ms
+      // });
 
       res.status(201).json({
         message: "User successfully created",
@@ -86,13 +94,13 @@ exports.login = async (req, res) => {
     // Check if the username exists
     const user = await User.findOne({ where: { username } });
     if (!user) {
-      return res.status(401).json({ message: "Username doesn't exist!" });
+      return res.status(500).json({ message: "Username doesn't exist!" });
     }
 
     // Check if the password is correct
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Password is not correct!" });
+      return res.status(500).json({ message: "Password is not correct!" });
     }
 
     // Generate a JWT token

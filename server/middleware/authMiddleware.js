@@ -28,6 +28,7 @@ const isAdmin = async (req, res, next) => {
     res
       .status(401)
       .json({ message: "1 You are not authorized for this route." });
+
   jwt.verify(token, process.env.SECRET_KEY, async (err, decodedToken) => {
     console.log(decodedToken.username, decodedToken.role);
     if (err) {

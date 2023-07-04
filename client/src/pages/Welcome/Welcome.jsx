@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-function Home() {
+function Welcome() {
   return (
     <>
       <div className="card m-5 text-center">
@@ -13,12 +13,12 @@ function Home() {
             content.
           </p>
           <div className="d-flex flex-row mb-3 justify-content-around">
-            <Link
+            {/* <Link
               to={"/registration/admin"}
               className="p-2 btn btn-primary btn-block"
             >
               Registration
-            </Link>
+            </Link> */}
 
             <Link to={"/login"} className="p-2 btn btn-primary btn-block">
               Login
@@ -30,4 +30,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Welcome;
