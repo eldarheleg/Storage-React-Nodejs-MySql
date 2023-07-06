@@ -1,11 +1,12 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function AddSupplier() {
+function EditSupplier() {
   const navigate = useNavigate();
+  //const {id} = useParams();
 
   const [formState, setFormState] = useState({
     supplierName: "",
@@ -15,99 +16,55 @@ function AddSupplier() {
     contactPerson: "",
     supplierEmail: "",
   });
+  //const [newFormState, setNewFormState] = useState({});
   const [errorState, setErrorState] = useState({});
-
- 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormState({ ...formState, [name]: value });
   };
 
-  useEffect(() => {
-    setErrorState(validate(formState));
-    //console.log("rendering");
-  }, [formState]);
-
-  const resetAll = () => {
-    setFormState({
-      supplierName: "",
-      jib: "",
-      pib: "",
-      phoneNumber: "",
-      contactPerson: "",
-      supplierEmail: "",
-    });
-  };
-
-  const submitForm = async (event) => {
-    event.preventDefault();
-    let data = {
-      supplierName: formState.supplierName,
-      jib: formState.jib,
-      pib: formState.pib,
-      phoneNumber: formState.phoneNumber,
-      contactPerson: formState.contactPerson,
-      supplierEmail: formState.supplierEmail,
-    };
-    console.log(data);
-    setErrorState(validate(formState));
-    console.log(errorState);
-    if (Object.keys(errorState).length === 0) {
-      console.log("fetching apiii.....");
-      await axios
-        .post("http://localhost:3001/api/suppliers/create", data)
-        .then((response) => {
-          //console.log(response);
-          toast.success("Supplier created successfully");
-          resetAll();
-          navigate("/home/suppliers");
-        })
-        .catch((error) => {
-          console.log(error.response.data.error);
-          toast.error(error.response.data.error);
+  const { id } = useParams();
+  async function fetchData() {
+    axios
+      .get(`http://localhost:3001/api/suppliers/${id}`)
+      .then((res) => {
+        //console.log(res);
+        setFormState({
+          ...formState,
+          supplierName: res.data.supplier.supplierName,
+          jib: res.data.supplier.jib,
+          pib: res.data.supplier.pib,
+          phoneNumber: res.data.supplier.phoneNumber,
+          contactPerson: res.data.supplier.contactPerson,
+          supplierEmail: res.data.supplier.supplierEmail,
         });
-    } else {
-      console.log("Error while creating supplier");
-    }
+      })
+      .catch((error) => console.log(error));
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(formState);
+    axios
+      .patch(`http://localhost:3001/api/suppliers/update/${id}`, formState)
+      .then((response) => {
+      console.log(response);
+        toast.success("Supplier created successfull");
+        navigate("/home/suppliers");
+      })
+      .catch((err) => console.log(err));
   };
-
-  const validate = (values) => {
-    const errors = {};
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-    if (!values.supplierName) {
-      errors.supplierName = "Required!";
-    }
-    if (!values.jib) {
-      errors.jib = "Required!";
-    } else if (values.jib.length > 13) {
-      errors.jib = "13 characters or less";
-    }
-    if (!values.pib) {
-      errors.pib = "Required!";
-    } else if (values.pib.length > 12) {
-      errors.pib = "12 characters or less";
-    }
-
-    if (!values.phoneNumber) {
-      errors.phoneNumber = "Required!";
-    }
-    if (!values.contactPerson) {
-      errors.contactPerson = "Required!";
-    }
-    if (!values.supplierEmail) {
-      errors.supplierEmail = "Required!";
-    } else if (!regex.test(values.supplierEmail)) {
-      errors.supplierEmail = "Not a valid email format!";
-    }
-
-    return errors;
-  };
-
   return (
     <div className="d-flex flex-column align-items-center pt-4">
+      
       <ToastContainer />
-      <form className="row g-3 w-50" onSubmit={submitForm}>
+      <h4>Edit Supplier</h4>
+      <form className="row g-3 w-50" onSubmit={handleSubmit}>
         <div className="col-12">
           <div className="d-flex col justify-content-between">
             <label htmlFor="inputName" className="form-label">
@@ -116,11 +73,11 @@ function AddSupplier() {
             <p className="form-label text-danger">{errorState.supplierName}</p>
           </div>
           <input
+            value={formState.supplierName}
             type="text"
             className="form-control"
             name="supplierName"
             placeholder="Supplier name"
-            
             onChange={handleChange}
           />
         </div>
@@ -132,11 +89,11 @@ function AddSupplier() {
             <p className="form-label text-danger">{errorState.jib}</p>
           </div>
           <input
+            value={formState.jib}
             type="number"
             className="form-control"
             name="jib"
             placeholder="Jib"
-            
             onChange={handleChange}
           />
         </div>
@@ -148,6 +105,7 @@ function AddSupplier() {
             <p className="form-label text-danger">{errorState.pib}</p>
           </div>
           <input
+            value={formState.pib}
             type="number"
             className="form-control"
             name="pib"
@@ -163,11 +121,11 @@ function AddSupplier() {
             <p className="form-label text-danger">{errorState.phoneNumber}</p>
           </div>
           <input
+            value={formState.phoneNumber}
             type="number"
             className="form-control"
             name="phoneNumber"
             placeholder="Phone number"
-            
             onChange={handleChange}
           />
         </div>
@@ -179,11 +137,11 @@ function AddSupplier() {
             <p className="form-label text-danger">{errorState.contactPerson}</p>
           </div>
           <input
+            value={formState.contactPerson}
             type="text"
             className="form-control"
             name="contactPerson"
             placeholder="Contact person name"
-            
             onChange={handleChange}
           />
         </div>
@@ -195,22 +153,18 @@ function AddSupplier() {
             <p className="form-label text-danger">{errorState.supplierEmail}</p>
           </div>
           <input
+            value={formState.supplierEmail}
             type="email"
             className="form-control"
             name="supplierEmail"
             placeholder="Supplier email"
-            
             onChange={handleChange}
           />
         </div>
 
-        <div className="col-12 text-center mb-3">
-          <button
-            type="submit"
-            className="btn btn-primary w-50"
-            disabled={Object.keys(errorState).length !== 0 ? true : false}
-          >
-            Create
+        <div className="col-12 text-center">
+          <button type="submit" className="btn btn-success w-50">
+            Update
           </button>
         </div>
       </form>
@@ -218,4 +172,4 @@ function AddSupplier() {
   );
 }
 
-export default AddSupplier;
+export default EditSupplier;

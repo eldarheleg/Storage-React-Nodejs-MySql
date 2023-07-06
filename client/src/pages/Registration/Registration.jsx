@@ -2,8 +2,8 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AuthContext } from "../../helpers/AuthContext";
 import "./index.css";
+import { useNavigate } from "react-router-dom";
 
 function Registration() {
   const [formState, setFormState] = useState({
@@ -18,6 +18,8 @@ function Registration() {
     email: "",
   });
   const [errorState, setErrorState] = useState({});
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,22 +57,23 @@ function Registration() {
       address: formState.address,
       email: formState.email,
     };
-    console.log(data);
+    //console.log(data);
     setErrorState(validate(formState));
-    console.log(errorState);
+    //console.log(errorState);
     if (Object.keys(errorState).length === 0) {
       console.log("fetching apiii.....");
+      //there are second route ../register with isAdmin validation 
       await axios
         .post("http://localhost:3001/api/users/register/admin", data)
         .then((response) => {
           toast.success("Registration successfull");
+          navigate("/")
         })
         .catch((error) => {
           if (error.response.data.error === 1062) {
             toast.error("User with that email already exists!");
           } else {
             console.log(error.response.data.error);
-
             toast.error(error.response.data.error);
           }
         });
@@ -114,9 +117,9 @@ function Registration() {
   };
 
   return (
-    <section className="h-100 bg-dark">
+    <section className="h-80 bg-dark">
       <ToastContainer />
-      <div className="container py-5 h-100">
+      <div className="container pt-2 h-100">
         <div className="row d-flex justify-content-center align-items-center h-100">
           <div className="col">
             <div className="card card-registration d-flex flex-column my-4">
@@ -125,8 +128,7 @@ function Registration() {
                   <img
                     src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZW1wbG95ZWV8ZW58MHx8MHx8fDA%3D&w=1000&q=80"
                     alt="Sample"
-                    className="img-fluid "
-                    //style={border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;}
+                    className="img-fluid"
                   />
                 </div>
                 <form onSubmit={submitRegister} className="col-xl-6">

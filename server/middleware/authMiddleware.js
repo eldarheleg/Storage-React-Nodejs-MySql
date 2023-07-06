@@ -3,7 +3,7 @@ const config = process.env;
 
 const tokenAuth = (req, res, next) => {
   const token = req.cookies.jwt;
-  //console.log(token);
+  console.log(token);
   if (!token) {
     return res.status(403).send({
       message: "A token is required for authentication",

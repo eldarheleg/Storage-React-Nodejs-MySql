@@ -13,3 +13,6 @@
   height: 100%;
   }
 }
+.gradient-custom {
+  background: linear-gradient(to right, #424ba3, #5e6df3);
+}

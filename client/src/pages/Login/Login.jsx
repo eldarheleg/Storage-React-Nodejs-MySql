@@ -2,21 +2,22 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AuthContext } from "../../helpers/AuthContext";
+import useAuth from "../../helpers/useAuth";
 import { useNavigate, Link } from "react-router-dom";
 import "./index.css";
 
 function Login() {
+  const { setAuth } = useAuth();
+
   const [formState, setFormState] = useState({
     username: "",
-    password: ""
+    password: "",
   });
-  const { setAuthState } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (event) => {
-    const { name, value } = event.target
-    setFormState({...formState, [name]: value})
+    const { name, value } = event.target;
+    setFormState({ ...formState, [name]: value });
   };
 
   const submitLogin = async (event) => {
@@ -27,21 +28,20 @@ function Login() {
     };
     //console.log(data)
     await axios
-      .post("http://localhost:3001/api/users/login", data)
+      .post("http://localhost:3001/api/users/login", data, {
+        withCredentials: true,
+      })
       .then((response) => {
         let resData = response.data;
-        console.log(resData);
+        //console.log(resData);
         localStorage.setItem("accessToken", resData.token);
-        setAuthState({
-          //id: resData.id,
-          username: resData.username,
-          isLogged: true,
-        });
+        //localStorage.setItem("userRole", resData.role);
+        setAuth({ user: resData.user, role: resData.role, isLogged: true });
         toast.success("Login successfull");
         navigate("/home");
       })
       .catch((error) => {
-          toast.error(error.response.data.message);
+        toast.error(error.message);
       });
   };
 

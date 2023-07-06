@@ -59,14 +59,6 @@ exports.signup = async (req, res) => {
         httpOnly: true,
         maxAge: maxAge * 1000, // 3hrs in ms
       });
-      // res.cookie("jwt", token, {
-      //   httpOnly: true,
-      //   maxAge: maxAge * 1000, // 3hrs in ms
-      // });
-      // res.cookie("jwt", token, {
-      //   httpOnly: true,
-      //   maxAge: maxAge * 1000, // 3hrs in ms
-      // });
 
       res.status(201).json({
         message: "User successfully created",
@@ -105,6 +97,8 @@ exports.login = async (req, res) => {
 
     // Generate a JWT token
     const token = createToken({ username: user.username, role: user.role });
+
+    //store jwt and role into cookie
     res.cookie("jwt", token, {
       httpOnly: true,
       maxAge: maxAge * 1000, // 3hrs in ms
@@ -117,7 +111,7 @@ exports.login = async (req, res) => {
       token: token,
     });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -125,7 +119,7 @@ exports.login = async (req, res) => {
 exports.logout = async (req, res) => {
   res.clearCookie("jwt");
 
-  res.json({ message: "Logged out successfully" });
+  res.status(201).json({ message: "Logged out successfully" });
 };
 
 exports.changePassword = async (req, res) => {

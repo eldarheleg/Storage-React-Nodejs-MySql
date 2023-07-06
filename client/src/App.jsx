@@ -1,12 +1,5 @@
 import "./App.css";
-import Nav from "./layout/Navigation";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Redirect,
-} from "react-router-dom";
-import { AuthContext } from "./helpers/AuthContext";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Home from "./pages/Home/Home";
 import Registration from "./pages/Registration/Registration";
@@ -20,42 +13,65 @@ import Materials from "./pages/Materials/Materials";
 import Processes from "./pages/Processes/Processes";
 import Supplires from "./pages/Suppliers/Suppliers";
 import AddSupplier from "./pages/Suppliers/AddSupplier";
+import EditSupplier from "./pages/Suppliers/EditSupplier";
+import ProtectedRoute from "./pages/ProtectedRoute";
+import Unauthorized from "./pages/Unauthorized";
+import { AuthProvider } from "./helpers/AuthProvider";
+import AuthRoutes from "./pages/AuthRoutes";
+import Dashboard from "./pages/Dashboard";
+import Navigation from "./layout/Navigation";
+
+const ROLES = {
+  user: "USER",
+  admin: "ADMIN",
+};
 
 function App() {
-  const [authState, setAuthState] = useState({
-    id: 0,
-    username: "",
-    isLogged: false,
-  });
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const checkUserToken = () => {
+    const userToken = localStorage.getItem("accesToken");
+    if (!userToken || userToken === "undefined") {
+      setIsLoggedIn(false);
+    }
+    setIsLoggedIn(true);
+  };
   useEffect(() => {
-    let accessToken = localStorage.getItem("accessToken");
-  }, []);
+    checkUserToken();
+  }, [isLoggedIn]);
 
   return (
-    <AuthContext.Provider value={{ authState, setAuthState }}>
-      <div className="App">
-        <Router>
+    <div className="App">
+      <Router>
+        <AuthProvider>
           <Routes>
             <Route path="/" element={<Welcome />} />
-            <Route path="/registration" element={<Registration />} />
             <Route path="/registration/admin" element={<Registration />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/home" element={<Home />}>
-              <Route path="/home/profile" element={<Profile />} />
-              <Route path="/home/employees" element={<Employees />} />
-              <Route path="/home/products" element={<Products />} />
-              <Route path="/home/materials" element={<Materials />} />
-              <Route path="/home/processes" element={<Processes />} />
-              <Route path="/home/suppliers" element={<Supplires />}>
-                <Route path="/home/suppliers/create" element={<AddSupplier />} />
+            <Route element={<AuthRoutes authToken={isLoggedIn} />}>
+              <Route path="/home" element={<Home />}>
+                <Route path="" element={<Dashboard />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="employees" element={<Employees />} />
+                <Route path="products" element={<Products />} />
+                <Route path="materials" element={<Materials />} />
+                <Route path="processes" element={<Processes />} />
+                <Route path="suppliers" element={<Navigation />}>
+
+                  <Route path="" element={<Supplires />} />
+                  <Route path="create" element={<AddSupplier />} />
+                  <Route path="update/:id" element={<EditSupplier />} />
+                </Route>
+                <Route element={<ProtectedRoute allowedRole={ROLES.admin} />}>
+                  <Route path="registration" element={<Registration />} />
+                </Route>
               </Route>
             </Route>
+            <Route path="unauthorized" element={<Unauthorized />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
-        </Router>
-      </div>
-    </AuthContext.Provider>
+        </AuthProvider>
+      </Router>
+    </div>
   );
 }
 

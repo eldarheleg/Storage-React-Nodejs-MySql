@@ -10,18 +10,14 @@ const materialRoutes = require("./routes/materialRoutes");
 const supplierRoutes = require("./routes/supplierRoutes");
 
 
-// parse cookie
-app.use(cookieParser());
 // parse json
 app.use(express.json());
+// parse cookie
+app.use(cookieParser());
 
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 //db connect
 const db = require("./models/connection");
-
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to your application." });
-});
 
 // Routes
 app.use("/api/users", userRoutes);

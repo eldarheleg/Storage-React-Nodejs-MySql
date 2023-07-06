@@ -6,8 +6,8 @@ const Supplier = db.supplier;
 exports.createSupplier = async (req, res) => {
   const { supplierName, jib, pib, phoneNumber, contactPerson, supplierEmail } =
     req.body;
-    let transactions = await db.sequelize.transaction();
-    const today = new Date();
+  let transactions = await db.sequelize.transaction();
+  const today = new Date();
 
   //check user existence
   const existSupplier = await Supplier.findOne({
@@ -25,8 +25,8 @@ exports.createSupplier = async (req, res) => {
           pib,
           phoneNumber,
           contactPerson,
-              supplierEmail,
-          start_date: today
+          supplierEmail,
+          start_date: today,
         },
         { transactions }
       );
@@ -40,7 +40,9 @@ exports.createSupplier = async (req, res) => {
     } catch (error) {
       await transactions.rollback();
       console.error(error.message);
-      res.status(500).json({ message: "Internal server error - " + error.message });
+      res
+        .status(500)
+        .json({ message: "Internal server error - " + error.message });
     }
   } else {
     await transactions.rollback();
@@ -49,35 +51,34 @@ exports.createSupplier = async (req, res) => {
 };
 
 exports.updateSupplier = async (req, res) => {
+  const id = req.params.id;
+  const data = req.body;
   try {
-    if (req.body.price)
-      return res
-        .status(400)
-        .json({ message: "You can't change price of product." });
-    const updatedItem = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.params.body
-    );
-    if (!updatedItem)
-      return res.status(400).json({ message: "Item does not exist." });
-    return res.status(201).json({ updatedItem });
-  } catch (err) {
-    return res.status(400).json({ message: err.message });
+    const found = await Supplier.findByPk(id);
+    if (!found)
+      return res.status(400).json({ message: "Supplier does not exist." });
+    const updated = await Supplier.update( data , { where: { id: id } });
+    return res.status(201).json({ updated });
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ message: error.message });
   }
 };
 
 exports.getSingleSupplier = async (req, res) => {
   const id = req.params.id;
-  let product1;
+  let supplier;
   try {
-    product1 = await Product.findById(id);
-  } catch (err) {
-    return console.log(err);
+    supplier = await Supplier.findByPk(id);
+    if (!supplier) {
+      return res.status(404).json({ message: "No supplier found" });
+    }
+    return res.status(200).json({ supplier });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: error.message });
   }
-  if (!product1) {
-    return res.status(404).json({ message: "No product found" });
-  }
-  return res.status(200).json({ product1 });
+  
 };
 
 exports.getAllSuppliers = async (req, res) => {
