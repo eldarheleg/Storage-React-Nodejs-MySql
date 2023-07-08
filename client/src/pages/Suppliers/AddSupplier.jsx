@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 function AddSupplier() {
   const navigate = useNavigate();
-
   const [formState, setFormState] = useState({
     supplierName: "",
     jib: "",
@@ -17,8 +16,6 @@ function AddSupplier() {
   });
   const [errorState, setErrorState] = useState({});
 
- 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormState({ ...formState, [name]: value });
@@ -26,7 +23,6 @@ function AddSupplier() {
 
   useEffect(() => {
     setErrorState(validate(formState));
-    //console.log("rendering");
   }, [formState]);
 
   const resetAll = () => {
@@ -58,8 +54,7 @@ function AddSupplier() {
       await axios
         .post("http://localhost:3001/api/suppliers/create", data)
         .then((response) => {
-          //console.log(response);
-          toast.success("Supplier created successfully");
+          console.log("Supplier created successfully");
           resetAll();
           navigate("/home/suppliers");
         })
@@ -120,7 +115,6 @@ function AddSupplier() {
             className="form-control"
             name="supplierName"
             placeholder="Supplier name"
-            
             onChange={handleChange}
           />
         </div>
@@ -136,7 +130,6 @@ function AddSupplier() {
             className="form-control"
             name="jib"
             placeholder="Jib"
-            
             onChange={handleChange}
           />
         </div>
@@ -167,7 +160,6 @@ function AddSupplier() {
             className="form-control"
             name="phoneNumber"
             placeholder="Phone number"
-            
             onChange={handleChange}
           />
         </div>
@@ -183,7 +175,6 @@ function AddSupplier() {
             className="form-control"
             name="contactPerson"
             placeholder="Contact person name"
-            
             onChange={handleChange}
           />
         </div>
@@ -199,7 +190,6 @@ function AddSupplier() {
             className="form-control"
             name="supplierEmail"
             placeholder="Supplier email"
-            
             onChange={handleChange}
           />
         </div>

@@ -1,10 +1,17 @@
-import { Link, Routes, useNavigate, Outlet } from "react-router-dom";
-import useAuth from "../../helpers/useAuth";
+import { Link, useNavigate, Outlet } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../helpers/AuthProvider";
 
 function Home() {
-  const { auth, setAuth } = useAuth();
+  const { setIsLogged } = useAuth();
   const navigate = useNavigate();
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+    const roleLocal = localStorage.getItem("userRole");
+    setRole(roleLocal);
+  }, []);
 
   const logout = async () => {
     await axios
@@ -12,7 +19,8 @@ function Home() {
       .then((response) => {
         console.log(response);
         localStorage.removeItem("accessToken");
-        setAuth({});
+        localStorage.removeItem("userRole");
+        setIsLogged(false);
         navigate("/");
       })
       .catch((error) => {
@@ -26,7 +34,7 @@ function Home() {
           <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-primary shadow-lg">
             <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
               <div className="d-flex align-items-center pb-3 mb-md-1 mt-md-3 me-md-auto text-white text-decoration-none ">
-                {auth.role === "ADMIN" ? (
+                {role === "ADMIN" ? (
                   <span className="fs-5 fw-bolder d-none d-sm-inline">
                     Admin Dashboard
                   </span>
@@ -104,7 +112,7 @@ function Home() {
                     <span className="ms-3 d-none d-sm-inline">Profile</span>
                   </Link>
                 </li>
-                {auth.role === "ADMIN" ? (
+                {role === "ADMIN" ? (
                   <li>
                     <Link
                       to="registration"

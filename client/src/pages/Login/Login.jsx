@@ -1,14 +1,13 @@
 import axios from "axios";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../helpers/AuthProvider";
 import "react-toastify/dist/ReactToastify.css";
-import useAuth from "../../helpers/useAuth";
-import { useNavigate, Link } from "react-router-dom";
 import "./index.css";
 
 function Login() {
-  const { setAuth } = useAuth();
-
+  const { setIsLogged, setTokenFun } = useAuth();
   const [formState, setFormState] = useState({
     username: "",
     password: "",
@@ -26,18 +25,17 @@ function Login() {
       username: formState.username,
       password: formState.password,
     };
-    //console.log(data)
     await axios
       .post("http://localhost:3001/api/users/login", data, {
         withCredentials: true,
       })
       .then((response) => {
         let resData = response.data;
-        //console.log(resData);
         localStorage.setItem("accessToken", resData.token);
-        //localStorage.setItem("userRole", resData.role);
-        setAuth({ user: resData.user, role: resData.role, isLogged: true });
-        toast.success("Login successfull");
+        localStorage.setItem("userRole", resData.role);
+        setTokenFun(resData.token);
+        setIsLogged(true);
+        console.log("Login successfull");
         navigate("/home");
       })
       .catch((error) => {

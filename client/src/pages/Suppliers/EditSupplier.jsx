@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 function EditSupplier() {
   const navigate = useNavigate();
-  //const {id} = useParams();
 
   const [formState, setFormState] = useState({
     supplierName: "",
@@ -16,7 +15,6 @@ function EditSupplier() {
     contactPerson: "",
     supplierEmail: "",
   });
-  //const [newFormState, setNewFormState] = useState({});
   const [errorState, setErrorState] = useState({});
 
   const handleChange = (e) => {
@@ -29,7 +27,6 @@ function EditSupplier() {
     axios
       .get(`http://localhost:3001/api/suppliers/${id}`)
       .then((res) => {
-        //console.log(res);
         setFormState({
           ...formState,
           supplierName: res.data.supplier.supplierName,
@@ -53,7 +50,7 @@ function EditSupplier() {
     axios
       .patch(`http://localhost:3001/api/suppliers/update/${id}`, formState)
       .then((response) => {
-      console.log(response);
+        console.log(response);
         toast.success("Supplier created successfull");
         navigate("/home/suppliers");
       })
@@ -61,7 +58,6 @@ function EditSupplier() {
   };
   return (
     <div className="d-flex flex-column align-items-center pt-4">
-      
       <ToastContainer />
       <h4>Edit Supplier</h4>
       <form className="row g-3 w-50" onSubmit={handleSubmit}>
@@ -161,7 +157,6 @@ function EditSupplier() {
             onChange={handleChange}
           />
         </div>
-
         <div className="col-12 text-center">
           <button type="submit" className="btn btn-success w-50">
             Update

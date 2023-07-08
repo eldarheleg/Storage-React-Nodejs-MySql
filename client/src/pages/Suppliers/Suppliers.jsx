@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import "./index.css";
-import Navigation from "../../layout/Navigation";
 
 function Supplires() {
   const [suppliers, setSuppliers] = useState([]);
-  const navigate = useNavigate();
   useEffect(() => {
     fetchSuppliers();
   }, []);
@@ -15,9 +13,7 @@ function Supplires() {
     axios
       .get("http://localhost:3001/api/suppliers", {})
       .then((response) => {
-        //console.log(response.data);
         setSuppliers(response.data.suppliers);
-        //navigate("/suppliers")
       })
       .catch((error) => {
         console.log(error.message);
@@ -26,7 +22,6 @@ function Supplires() {
 
   return (
     <>
-      {/* <Navigation /> */}
       <div className="px-5 py-3 mt-3">
         <div className="mt-3">
           <table className="table">
@@ -36,7 +31,7 @@ function Supplires() {
                 <th>Email</th>
                 <th>Contact person</th>
                 <th>Phone number</th>
-                <th>Action</th>
+                <th className="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -55,10 +50,10 @@ function Supplires() {
                       <td>{supplier.supplierEmail}</td>
                       <td>{supplier.contactPerson}</td>
                       <td>{supplier.phoneNumber}</td>
-                      <td>
+                      <td className="text-center">
                         <Link
                           to={`update/` + supplier.id}
-                          className="btn btn-success btn-sm me-2"
+                          className="btn btn-success btn-sm w-50"
                         >
                           Edit
                         </Link>

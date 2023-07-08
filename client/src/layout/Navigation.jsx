@@ -1,6 +1,6 @@
 import { Link, Routes, useNavigate, Outlet } from "react-router-dom";
 
-function Navigation() {
+function Navigation(props) {
   return (
     <>
       <ul
@@ -31,7 +31,7 @@ function Navigation() {
           </Link>
         </li>
       </ul>
-      <div class="tab-content">
+      <div className="tab-content">
         <Outlet />
       </div>
     </>

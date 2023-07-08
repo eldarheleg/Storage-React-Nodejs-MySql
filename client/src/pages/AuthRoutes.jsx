@@ -1,13 +1,15 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../helpers/AuthProvider";
 
-const AuthRoutes = ({ authToken }) => {
+function AuthRoutes() {
   const location = useLocation();
+  const { isLogged } = useAuth();
 
-  return authToken ? (
+  return isLogged === true ? (
     <Outlet />
   ) : (
     <Navigate to="/unauthorized" state={{ from: location }} replace />
   );
-};
+}
 
 export default AuthRoutes;

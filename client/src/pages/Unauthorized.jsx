@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 const Unauthorized = () => {
   const navigate = useNavigate();
 
-  const goBack = () => navigate("/login",{replace: true});
+  const goBack = () => navigate("/",{replace: true});
 
   return (
     <div className="container text-center">
       <section className="card text-white bg-dark w-50 text-center mx-auto my-4">
-        <div class="card-header">Unauthorized</div>
+        <div className="card-header">Unauthorized</div>
         <br />
         <p>You do not have access to the requested page.</p>
         <br />
