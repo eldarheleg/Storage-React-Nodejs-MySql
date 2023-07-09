@@ -14,8 +14,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     phoneNumber: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: true,
+      validate: {
+        isNumeric: true,
+      },
     },
     address: {
       type: DataTypes.STRING,

@@ -1,6 +1,7 @@
 import { Link, Routes, useNavigate, Outlet } from "react-router-dom";
 
-function Navigation(props) {
+
+function Navigation({props}) {
   return (
     <>
       <ul
@@ -16,7 +17,7 @@ function Navigation(props) {
             aria-selected="true"
             data-toggle="tab"
           >
-            Supplier List
+            {props + "s"} List
           </Link>
         </li>
         <li className="nav-item">
@@ -27,7 +28,7 @@ function Navigation(props) {
             aria-selected="false"
             data-toggle="tab"
           >
-            Add supplier
+            Add {props}
           </Link>
         </li>
       </ul>

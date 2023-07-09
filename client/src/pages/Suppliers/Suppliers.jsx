@@ -5,13 +5,14 @@ import "./index.css";
 
 function Supplires() {
   const [suppliers, setSuppliers] = useState([]);
+  
   useEffect(() => {
     fetchSuppliers();
   }, []);
 
   const fetchSuppliers = () => {
     axios
-      .get("http://localhost:3001/api/suppliers", {})
+      .get("http://localhost:3001/api/suppliers")
       .then((response) => {
         setSuppliers(response.data.suppliers);
       })

@@ -1,66 +1,113 @@
 const db = require("../models/connection");
-const Product = db.product
-const Material = db.material
+const Supplier = db.supplier;
+const Material = db.material;
 
 exports.createMaterial = async (req, res) => {
-  const { name, picUrl, profitMargin, process } = req.body;
+  const {
+    materialName,
+    quantity,
+    minQuantity,
+    price,
+    unitMeasure,
+    inUse,
+    supplierName,
+  } = req.body;
+  //console.log(price + "price err");
   let transactions = await db.sequelize.transaction();
-  try {
-    const findProcess = await Process.findByPk(process);
-    if (findProcess) {
-      const newProduct = new Product({
-        name,
-        picUrl,
-        profitMargin,
-        processId: process,
-      },{transactions});
-    } else {
-        console.log("process not found")
-        return res.status(500).json({ message: "process not found" });
+  const today = new Date();
+
+  //check user existence
+  const matchSupplier = await Supplier.findOne({
+    where: {
+      supplierName: supplierName,
+    },
+  });
+
+  if (!matchSupplier) res.status(404).json({ error: "Supplier not found" });
+
+  //console.log(matchSupplier)
+  const existMaterial = await Material.findOne({
+    where: {
+      materialName: materialName,
+    },
+  });
+
+  if (!existMaterial) {
+    try {
+      const newMaterial = await Material.create(
+        {
+          materialName,
+          quantity,
+          minQuantity,
+          price,
+          unitMeasure,
+          inUse,
+          supplierId: matchSupplier.id,
+        },
+        { transactions }
+      );
+
+      //console.log(newMaterial);
+      await transactions.commit();
+      res.status(201).json({
+        message: "Material successfully created",
+        material: newMaterial.materialName,
+        supplierName: matchSupplier.supplierName
+      });
+    } catch (error) {
+      await transactions.rollback();
+      console.error(error.message);
+      res.status(500).json({
+        message: "Internal server error",
+      });
     }
-  } catch (error) {
-    console.error(error);
-    // res.status(500).json({ message: "Internal server error" });
+  } else {
+    await transactions.rollback();
+    res.status(500).json({ error: "Material already exist" });
   }
 };
 
 exports.updateMaterial = async (req, res) => {
+  const id = req.params.id;
+  const data = req.body;
+  let transactions = await db.sequelize.transaction();
   try {
-    if (req.body.price)
-      return res
-        .status(400)
-        .json({ message: "You can't change price of product." });
-    const updatedItem = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.params.body
+    const found = await Material.findByPk(id);
+    if (!found)
+      return res.status(400).json({ message: "Material does not exist." });
+    const updated = await Material.update(
+      data,
+      { where: { id: id } },
+      { transactions }
     );
-    if (!updatedItem)
-      return res.status(400).json({ message: "Item does not exist." });
-    return res.status(201).json({ updatedItem });
-  } catch (err) {
-    return res.status(400).json({ message: err.message });
+    await transactions.commit();
+    return res.status(201).json({ updated });
+  } catch (error) {
+    console.log(error);
+    await transactions.rollback();
+    return res.status(400).json({ message: error.message });
   }
 };
 
 exports.getSingleMaterial = async (req, res) => {
   const id = req.params.id;
-  let product1;
+  let material;
   try {
-    product1 = await Product.findById(id);
+    material = await Material.findByPk(id);
   } catch (err) {
     return console.log(err);
   }
-  if (!product1) {
-    return res.status(404).json({ message: "No product found" });
+  if (!material) {
+    return res.status(404).json({ message: "No material found" });
   }
-  return res.status(200).json({ product1 });
+  return res.status(200).json({ material });
 };
 
 exports.getAllMaterials = async (req, res) => {
-  let products;
+  let materials;
   try {
-    products = await Product.find();
-    return res.status(200).json({ products });
+    materials = await Material.findAll();
+    return res.status(200).json({ materials });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

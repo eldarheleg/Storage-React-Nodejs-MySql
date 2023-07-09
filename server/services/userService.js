@@ -14,7 +14,7 @@ const createToken = (object) => {
 
 exports.signup = async (req, res) => {
   const today = new Date();
-  const { firstName, lastName, address, email, username, password, role } =
+  const { firstName, lastName, address, email, username, password, role, phoneNumber } =
     req.body;
   let transactions = await db.sequelize.transaction();
 
@@ -35,6 +35,7 @@ exports.signup = async (req, res) => {
           lastName,
           address,
           email,
+          phoneNumber,
           start_date: today,
         },
         { transactions }

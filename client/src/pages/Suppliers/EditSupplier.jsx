@@ -51,7 +51,7 @@ function EditSupplier() {
       .patch(`http://localhost:3001/api/suppliers/update/${id}`, formState)
       .then((response) => {
         console.log(response);
-        toast.success("Supplier created successfull");
+        toast.success("Supplier updated successfull");
         navigate("/home/suppliers");
       })
       .catch((err) => console.log(err));

@@ -9,11 +9,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    amount: {
+    quantity: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    minKolicina: {
+    minQuantity: {
       type: DataTypes.DOUBLE,
       allowNull: true,
     },

@@ -53,14 +53,21 @@ exports.createSupplier = async (req, res) => {
 exports.updateSupplier = async (req, res) => {
   const id = req.params.id;
   const data = req.body;
+  let transactions = await db.sequelize.transaction();
   try {
     const found = await Supplier.findByPk(id);
     if (!found)
       return res.status(400).json({ message: "Supplier does not exist." });
-    const updated = await Supplier.update( data , { where: { id: id } });
+    const updated = await Supplier.update(
+      data,
+      { where: { id: id } },
+      { transactions }
+    );
+    await transactions.commit();
     return res.status(201).json({ updated });
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    await transactions.rollback();
     return res.status(400).json({ message: error.message });
   }
 };
@@ -78,7 +85,6 @@ exports.getSingleSupplier = async (req, res) => {
     console.log(error);
     return res.status(400).json({ message: error.message });
   }
-  
 };
 
 exports.getAllSuppliers = async (req, res) => {

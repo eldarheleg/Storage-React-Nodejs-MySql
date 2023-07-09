@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 function PageNotFound() {
   const navigate = useNavigate();
 
-  const goBack = () => navigate("/", { replace: true });
+  const goBack = () => navigate(-1);
   return (
     <body>
       <div className="d-flex align-items-center justify-content-center vh-100">

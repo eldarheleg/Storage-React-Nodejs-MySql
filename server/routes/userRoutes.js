@@ -9,6 +9,6 @@ router.post("/login", userService.login);
 router.get("/logout", auth.tokenAuth, userService.logout);
 router.patch("/password-recovery/:username", auth.tokenAuth, userService.changePassword);
 router.get("/employees", auth.isAdmin, userService.getAll);
-router.get("/employees/:username", auth.isAdmin, userService.getOne);
+router.get("/employees/:username", auth.tokenAuth, userService.getOne);
 
 module.exports = router;

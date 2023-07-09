@@ -20,6 +20,8 @@ import Unauthorized from "./pages/Unauthorized";
 import AuthRoutes from "./pages/AuthRoutes";
 import Dashboard from "./pages/Dashboard";
 import Navigation from "./layout/Navigation";
+import AddMaterial from "./pages/Materials/AddMaterial";
+import EditMaterial from "./pages/Materials/EditMaterial";
 
 const ROLES = {
   user: "USER",
@@ -41,9 +43,13 @@ function App() {
                 <Route path="profile" element={<Profile />} />
                 <Route path="employees" element={<Employees />} />
                 <Route path="products" element={<Products />} />
-                <Route path="materials" element={<Materials />} />
+                <Route path="materials" element={<Navigation props={"Material"} />}>
+                  <Route path="" element={<Materials />} />
+                  <Route path="create" element={<AddMaterial />} />
+                  <Route path="update/:id" element={<EditMaterial />} />
+                </Route>
                 <Route path="processes" element={<Processes />} />
-                <Route path="suppliers" element={<Navigation />}>
+                <Route path="suppliers" element={<Navigation props={"Supplier"} />}>
                   <Route path="" element={<Supplires />} />
                   <Route path="create" element={<AddSupplier />} />
                   <Route path="update/:id" element={<EditSupplier />} />
