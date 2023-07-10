@@ -20,17 +20,18 @@ function Navigation({props}) {
             {props + "s"} List
           </Link>
         </li>
-        <li className="nav-item">
-          <Link
-            to="create"
-            className="nav-link text-light"
-            role="pill"
-            aria-selected="false"
-            data-toggle="tab"
-          >
-            Add {props}
-          </Link>
-        </li>
+      {props !== "Employee" ?
+      <li className="nav-item">
+        <Link
+          to="create"
+          className="nav-link text-light"
+          role="pill"
+          aria-selected="false"
+          data-toggle="tab"
+        >
+          Add {props}
+        </Link>
+      </li> : <></>}
       </ul>
       <div className="tab-content">
         <Outlet />

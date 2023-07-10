@@ -1,28 +1,26 @@
-import { useContext, useEffect, useState } from "react";
-//import { AuthContext } from "../helpers/AuthContext";
-//import CustomCard from "../../components/CustomCard";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "./index.css";
 
 function Profile() {
-  //const authState = useContext(AuthContext);
-  const [user, setUser] = useState(localStorage.getItem("user"));
+  const [id, setId] = useState(localStorage.getItem("userId"));
   const [role, setRole] = useState(localStorage.getItem("userRole"));
   const [userDetails, setUserDetails] = useState({});
 
   useEffect(() => {
     fetchEmployee();
   }, []);
+  //console.log(id)
 
   const fetchEmployee = () => {
     //console.log(user);
     axios
-      .get(`http://localhost:3001/api/users/employees/${user}`, {
+      .get(`http://localhost:3001/api/users/employees/${id}`, {
         withCredentials: true,
       })
       .then((response) => {
-        console.log(response.data);
-        setUserDetails(response.data);
+        //console.log(response.data)
+        setUserDetails(response.data.employee);
       })
       .catch((error) => {
         console.log(error);
@@ -66,7 +64,7 @@ function Profile() {
                     </div>
                     <div className="row pt-1">
                       <div className="col-6 mb-3">
-                        <h6>Recent</h6>
+                        <h6>Start date</h6>
                         <p className="text-muted">
                           {new Date(userDetails.start_date).toLocaleDateString(
                             "en",
@@ -79,8 +77,12 @@ function Profile() {
                         </p>
                       </div>
                       <div className="col-6 mb-3">
-                        <h6>Most Viewed</h6>
-                        <p className="text-muted">Dolor sit amet</p>
+                        <h6>End date</h6>
+                        {userDetails.fired_date === null ? (
+                          <p className="text-muted">still working</p>
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
                     <div className="d-flex justify-content-start">

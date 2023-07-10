@@ -1,16 +1,16 @@
 const jwt = require("jsonwebtoken");
-const config = process.env;
+
 
 const tokenAuth = (req, res, next) => {
   const token = req.cookies.jwt;
-  console.log(token);
+  //console.log(token);
   if (!token) {
     return res.status(403).send({
       message: "A token is required for authentication",
     });
   }
 
-  jwt.verify(token, config.SECRET_KEY, (err, decodedTok) => {
+  jwt.verify(token, process.env.SECRET_KEY, (err, decodedTok) => {
     if (err) {
       return res.status(401).send({
         message: "Unauthorized!",
@@ -23,6 +23,7 @@ const tokenAuth = (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
   const token = req.cookies.jwt;
+
   //console.log(token + "from backend");
   if (!token)
     res
@@ -30,7 +31,7 @@ const isAdmin = async (req, res, next) => {
       .json({ message: "1 You are not authorized for this route." });
 
   jwt.verify(token, process.env.SECRET_KEY, async (err, decodedToken) => {
-    //console.log(decodedToken.username, decodedToken.role);
+    //console.log(decodedToken);
     if (err) {
       return res
         .status(401)

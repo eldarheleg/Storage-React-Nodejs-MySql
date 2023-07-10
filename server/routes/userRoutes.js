@@ -7,8 +7,8 @@ router.post("/register", auth.isAdmin, userService.signup);
 router.post("/register/admin", userService.signup);
 router.post("/login", userService.login);
 router.get("/logout", auth.tokenAuth, userService.logout);
-router.patch("/password-recovery/:username", auth.tokenAuth, userService.changePassword);
+router.patch("/changepass/:id", auth.tokenAuth, userService.updatePassword);
 router.get("/employees", auth.isAdmin, userService.getAll);
-router.get("/employees/:username", auth.tokenAuth, userService.getOne);
+router.get("/employees/:id", auth.tokenAuth, userService.getOne);
 
 module.exports = router;

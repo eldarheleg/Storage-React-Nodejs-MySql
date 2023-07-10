@@ -14,8 +14,16 @@ const createToken = (object) => {
 
 exports.signup = async (req, res) => {
   const today = new Date();
-  const { firstName, lastName, address, email, username, password, role, phoneNumber } =
-    req.body;
+  const {
+    firstName,
+    lastName,
+    address,
+    email,
+    username,
+    password,
+    role,
+    phoneNumber,
+  } = req.body;
   let transactions = await db.sequelize.transaction();
 
   //check user existence
@@ -107,6 +115,7 @@ exports.login = async (req, res) => {
 
     res.status(201).json({
       message: "User successfully logged",
+      employeeId: user.employeeId,
       user: user.username,
       role: user.role,
       token: token,
@@ -123,43 +132,56 @@ exports.logout = async (req, res) => {
   res.status(201).json({ message: "Logged out successfully" });
 };
 
-exports.changePassword = async (req, res) => {
+exports.updatePassword = async (req, res) => {
+  const { id } = req.params;
+  const { currentPass, newPass } = req.body;
+  //console.log(id, currentPass, newPass);
+  const existUser = await User.findOne({
+    where: {
+      employeeId: id,
+    },
+  });
+  if (!existUser) res.status(404).json({ message: "User not found" });
   try {
-    const { username } = req.params;
-    const { currentPass, newPass } = req.body;
-    const user = await user.findByPk(username);
+    const isPasswordValid = await bcrypt.compare(
+      currentPass,
+      existUser.password
+    );
 
-    if (!user) res.status(404).json({ error: "User not found" });
-
-    const isMatch = await user.comparePassword(currentPass);
-
-    if (!isMatch) res.status(401).json({ error: "Current pass dont match" });
-
-    user.password = newPass;
-    await user.save();
-
-    res.json({ message: "Password updated successfully" });
+    if (!isPasswordValid) {
+      res.status(502).json({ message: "Current password is not correct!" });
+    } else {
+      const updated = await User.update(
+        {
+          password: await bcrypt.hash(newPass, 10),
+        },
+        { where: { employeeId: id } }
+      );
+      res
+        .status(200)
+        .json({ message: "Password updated successfully", updated });
+    }
   } catch (error) {
-    res.status(500).json({ error: "failed to update pass" });
+    res.status(500).json({ message: "failed to update pass" });
   }
 };
 
 exports.getAll = async (req, res) => {
   try {
     const employees = await Employee.findAll();
-    res.json(employees);
+    const users = await User.findAll();
+    res.status(200).json({ employees, users });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch employees" });
   }
 };
 
 exports.getOne = async (req, res) => {
-  const username = req.params.username;
+  const id = req.params.id;
   try {
-    const user = await User.findByPk(username);
-    const employee = await Employee.findByPk(user.employeeId);
+    const employee = await Employee.findByPk(id);
     if (employee) {
-      res.json(employee);
+      res.status(200).json({ employee });
     } else {
       res.status(404).json({ error: "Employee not found" });
     }

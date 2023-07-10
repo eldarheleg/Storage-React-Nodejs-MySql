@@ -33,7 +33,7 @@ function Login() {
         let resData = response.data;
         localStorage.setItem("accessToken", resData.token);
         localStorage.setItem("userRole", resData.role);
-        localStorage.setItem("user", resData.user);
+        localStorage.setItem("userId", resData.employeeId);
         
         setTokenFun(resData.token);
         setIsLogged(true);
