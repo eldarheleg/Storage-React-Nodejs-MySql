@@ -3,9 +3,9 @@ const router = express.Router();
 const processService = require("../services/processService");
 
 
-router.post("/", processService.createProcess);
-router.patch("/:id", processService.updateProcess);
-router.get("/", processService.getAllProcesses);
-router.get("/:id", processService.getSingleProcess);
+router.post("/create", processService.create);
+router.patch("/:id", processService.update);
+router.get("/", processService.getAll);
+router.get("/:id", processService.getSingle);
 
 module.exports = router;

@@ -8,6 +8,7 @@ const productRoutes = require("./routes/productRoutes");
 const processRoutes = require("./routes/processRoutes");
 const materialRoutes = require("./routes/materialRoutes");
 const supplierRoutes = require("./routes/supplierRoutes");
+const processItemRoutes = require("./routes/processItemRoutes")
 
 
 // parse json
@@ -22,6 +23,7 @@ const db = require("./models/connection");
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/processItems", processItemRoutes);
 app.use("/api/processes", processRoutes);
 app.use("/api/materials", materialRoutes);
 app.use("/api/suppliers", supplierRoutes);

@@ -1,30 +1,44 @@
 const db = require("../models/connection");
-const Product = db.product
-const Process = db.process
+const Product = db.product;
+const Process = db.process;
 
-exports.createProcess = async (req, res) => {
-  const { name, picUrl, profitMargin, process } = req.body;
+exports.create = async (req, res) => {
+  const { processName, end_date, start_date, processItemId, processItem } =
+    req.body;
   let transactions = await db.sequelize.transaction();
-  try {
-    const findProcess = await Process.findByPk(process);
-    if (findProcess) {
-      const newProduct = new Product({
-        name,
-        picUrl,
-        profitMargin,
-        processId: process,
-      },{transactions});
-    } else {
-        console.log("process not found")
-        return res.status(500).json({ message: "process not found" });
+
+  const processExist = await Process.findOne({
+    where: { processName: processName },
+  });
+  if (!processExist) {
+    try {
+      const newProcess = await Process.create(
+        {
+          processName,
+          end_date,
+          start_date,
+          processPrice: processItem.material.price * processItem.amount,
+          processItemId: processItemId,
+        },
+        { transactions }
+      );
+
+      res.status(201).json({
+        message: "Process successfully created",
+        process: newProcess,
+      });
+      await transactions.commit();
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
-  } catch (error) {
-    console.error(error);
-    // res.status(500).json({ message: "Internal server error" });
+  } else {
+    await transactions.rollback();
+    res.status(500).json({ error: "Process already exists" });
   }
 };
 
-exports.updateProcess = async (req, res) => {
+exports.update = async (req, res) => {
   try {
     if (req.body.price)
       return res
@@ -42,25 +56,25 @@ exports.updateProcess = async (req, res) => {
   }
 };
 
-exports.getSingleProcess = async (req, res) => {
+exports.getSingle = async (req, res) => {
   const id = req.params.id;
-  let product1;
+  let process;
   try {
-    product1 = await Product.findById(id);
+    process = await Product.findByPk(id);
   } catch (err) {
     return console.log(err);
   }
-  if (!product1) {
+  if (!process) {
     return res.status(404).json({ message: "No product found" });
   }
-  return res.status(200).json({ product1 });
+  return res.status(200).json({ process });
 };
 
-exports.getAllProcesses = async (req, res) => {
-  let products;
+exports.getAll = async (req, res) => {
+  let processes;
   try {
-    products = await Product.find();
-    return res.status(200).json({ products });
+    processes = await Process.findAll();
+    return res.status(200).json({ processes });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

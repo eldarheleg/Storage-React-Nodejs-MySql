@@ -34,14 +34,18 @@ function Login() {
         localStorage.setItem("accessToken", resData.token);
         localStorage.setItem("userRole", resData.role);
         localStorage.setItem("userId", resData.employeeId);
-        
+
         setTokenFun(resData.token);
         setIsLogged(true);
         console.log("Login successfull");
         navigate("/home");
       })
       .catch((error) => {
-        toast.error(error.message);
+        if (error.response.status === 500) {
+          toast.error("Incorrect username or password");
+        } else {
+          toast.error(error.message);
+        }
       });
   };
 

@@ -49,6 +49,9 @@ db.product.belongsTo(db.process);
 db.material.hasMany(db.processItem, { foreignKey: "materialId" });
 db.processItem.belongsTo(db.material);
 
+db.processItem.hasMany(db.process, { foreignKey: "processItemId" });
+db.process.belongsTo(db.processItem);
+
 // ---------WITH CREATED DATABASE---------
 // const sequelize = new Sequelize(
 //   dbConfig.development.database,

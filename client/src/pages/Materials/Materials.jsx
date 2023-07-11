@@ -40,6 +40,7 @@ function Materials() {
           <table className="table">
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Quantity</th>
                 <th>Minimum quantity</th>
@@ -61,6 +62,7 @@ function Materials() {
                 materials.map((material) => {
                   return (
                     <tr key={material.id}>
+                      <td>{material.id}</td>
                       <td>{material.materialName}</td>
                       <td>{material.quantity}</td>
                       <td>{material.minQuantity}</td>

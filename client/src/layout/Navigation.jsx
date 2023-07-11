@@ -1,7 +1,6 @@
 import { Link, Routes, useNavigate, Outlet } from "react-router-dom";
 
-
-function Navigation({props}) {
+function Navigation({ props, addons }) {
   return (
     <>
       <ul
@@ -20,18 +19,49 @@ function Navigation({props}) {
             {props + "s"} List
           </Link>
         </li>
-      {props !== "Employee" ?
-      <li className="nav-item">
-        <Link
-          to="create"
-          className="nav-link text-light"
-          role="pill"
-          aria-selected="false"
-          data-toggle="tab"
-        >
-          Add {props}
-        </Link>
-      </li> : <></>}
+        {props !== "Employee" ? (
+          <li className="nav-item">
+            <Link
+              to="create"
+              className="nav-link text-light"
+              role="pill"
+              aria-selected="false"
+              data-toggle="tab"
+            >
+              Add {props}
+            </Link>
+          </li>
+        ) : (
+          <></>
+        )}
+        {addons === "Process Item" ? (
+          <>
+            <li className="nav-item">
+              <Link
+                to="processItems"
+                className="nav-link text-light"
+                role="pill"
+                aria-selected="false"
+                data-toggle="tab"
+              >
+              {addons + "s"} List
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="processItems/create"
+                className="nav-link text-light"
+                role="pill"
+                aria-selected="false"
+                data-toggle="tab"
+              >
+                Add {addons}
+              </Link>
+            </li>
+          </>
+        ) : (
+          <></>
+        )}
       </ul>
       <div className="tab-content">
         <Outlet />
