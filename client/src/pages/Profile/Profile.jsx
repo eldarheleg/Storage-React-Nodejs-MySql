@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Cookies from "js-cookie"
 import "./index.css";
 
 function Profile() {
-  const [id, setId] = useState(localStorage.getItem("userId"));
-  const [role, setRole] = useState(localStorage.getItem("userRole"));
+  const [id, setId] = useState(Cookies.get("userId"));
+  const [role, setRole] = useState(Cookies.get("userRole"));
   const [userDetails, setUserDetails] = useState({});
 
   useEffect(() => {

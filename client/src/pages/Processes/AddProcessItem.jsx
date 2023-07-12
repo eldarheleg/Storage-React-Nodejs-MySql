@@ -1,35 +1,44 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function AddProcessItem() {
   const navigate = useNavigate();
-  const [materials, setMaterials] = useState([]);
+  const [material, setMaterial] = useState({});
   const [errorState, setErrorState] = useState({});
   const [amount, setAmount] = useState(0);
   const [materialId, setMaterialId] = useState(0);
+  const [found, setFound] = useState(false);
 
   useEffect(() => {
-    fetchMaterials();
-  }, []);
+    fetchMaterial();
+  }, [amount, materialId]);
 
-  const fetchMaterials = () => {
-    axios
-      .get("http://localhost:3001/api/materials")
-      .then((response) => {
-        //console.log(response.data.materials);
-        setMaterials(response.data.materials);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+  const fetchMaterial = () => {
+    let id = materialId;
+    if (id) {
+      axios
+        .get("http://localhost:3001/api/materials/" + id)
+        .then((response) => {
+          //console.log(response.data.material);
+          setMaterial(response.data.material);
+          setFound(true);
+        })
+        .catch((error) => {
+          setFound(false);
+          console.log(error.message);
+        });
+    } else {
+      setFound(false);
+      //console.log("id not set");
+    }
   };
 
   useEffect(() => {
     setErrorState(validate({ amount, materialId }));
-  }, [amount]);
+  }, [amount, materialId]);
 
   const resetAll = () => {
     setAmount(0);
@@ -38,13 +47,6 @@ function AddProcessItem() {
 
   const submitForm = async (event) => {
     event.preventDefault();
-    const isFound = materials.some((material) => {
-      console.log(material.id, parseInt(materialId));
-      if (material.id === parseInt(materialId)) {
-        return true;
-      }
-      return false;
-    });
 
     let data = {
       amount: amount,
@@ -53,7 +55,7 @@ function AddProcessItem() {
     //console.log(data);
     setErrorState(validate({ amount, materialId }));
     //console.log(errorState);
-    if (Object.keys(errorState).length === 0 && isFound) {
+    if (Object.keys(errorState).length === 0) {
       console.log("fetching apiii.....");
       await axios
         .post("http://localhost:3001/api/processItems/create", data)
@@ -63,12 +65,16 @@ function AddProcessItem() {
           navigate("/home/processes/processItems");
         })
         .catch((error) => {
-          console.log(error.response.data.error);
-          toast.error(error.response.data.error);
+          if (error.response.status === 500) {
+            toast.error("Material not found or error occured");
+          } else {
+            console.log(error.response.data.message);
+            toast.error(error.response.data.message);
+          }
         });
     } else {
       console.log("Error while creating process item");
-      toast.error("Material not found or error occured");
+      toast.error("Error while creating process item");
     }
   };
 
@@ -118,13 +124,24 @@ function AddProcessItem() {
             placeholder="ex. 1"
             onChange={(e) => setMaterialId(e.target.value)}
           />
+          {found ? (
+            <p className="form-label text-info">
+              Material name: {material.materialName}
+            </p>
+          ) : (
+            <p className="form-label text-danger">Material not found</p>
+          )}
         </div>
 
         <div className="col-12 text-center mb-3">
           <button
             type="submit"
             className="btn btn-primary w-50"
-            // disabled={Object.keys(errorState).length !== 0 ? true : false}
+            disabled={
+              Object.keys(errorState).length !== 0 && found === false
+                ? true
+                : false
+            }
           >
             Create
           </button>

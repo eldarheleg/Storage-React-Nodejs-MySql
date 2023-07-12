@@ -1,8 +1,9 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import { useState } from "react";
+import Cookies from "js-cookie"
 
 const ProtectedRoute = ({ allowedRole }) => {
-  const [role, setRole] = useState(localStorage.getItem("userRole"));
+  const [role, setRole] = useState(Cookies.get("userRole"));
   const location = useLocation();
 
   return role === allowedRole ? (

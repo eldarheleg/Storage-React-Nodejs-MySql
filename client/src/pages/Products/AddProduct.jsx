@@ -35,27 +35,26 @@ function AddProduct() {
       profitMargin: 0.0,
       processId: 0,
     });
-    };
-    
+  };
+
   const fetchProcess = async () => {
     let id = formState.processId;
-      if (id) {
-        
+    if (id) {
       axios
 
         .get("http://localhost:3001/api/processes/" + id)
         .then((response) => {
-          console.log(response.data.process);
-            setProcess(response.data.process);
-            setFound(true)
+          //console.log(response.data.process);
+          setProcess(response.data.process);
+          setFound(true);
         })
-          .catch((error) => {
-            setFound(false)
+        .catch((error) => {
+          setFound(false);
           console.log(error.message);
         });
-      } else {
-        setFound(false)
-      console.log("id not set");
+    } else {
+      setFound(false);
+      //console.log("id not set");
     }
   };
 
@@ -66,23 +65,27 @@ function AddProduct() {
       productImage: formState.productImage,
       productPrice: formState.price,
       profitMargin: formState.profitMargin,
-      processId: process.id,
+      processId: process.id || formState.processId,
     };
-    console.log(data);
+    //console.log(data);
     setErrorState(validate(formState));
-    console.log(errorState);
+    //console.log(errorState);
     if (Object.keys(errorState).length === 0) {
       console.log("fetching apiii.....");
       await axios
         .post("http://localhost:3001/api/products/create", data)
         .then((response) => {
           console.log("Product successfully added");
-            resetAll();
-            navigate("/home/products");
+          resetAll();
+          navigate("/home/products");
         })
         .catch((error) => {
-          console.log(error.response.data.error);
-          toast.error(error.response.data.error);
+          if (error.response.status === 500) {
+            toast.error("Process not found or error occured");
+          } else {
+            console.log(error.response.data.message);
+            toast.error(error.response.data.message);
+          }
         });
     } else {
       console.log("Error while creating Product");
@@ -198,15 +201,23 @@ function AddProduct() {
             name="processId"
             placeholder="ex. 1"
             onChange={handleChange}
-                  />
-                  <p className="form-label text-danger">{found?"":"process not found"}</p>
+          />
+          {found ? (
+            <p className="form-label text-info">
+              Process name: {process.processName}
+            </p>
+          ) : (
+            <p className="form-label text-danger">Process not found</p>
+          )}
         </div>
 
         <div className="col-12 text-center mb-3">
           <button
             type="submit"
             className="btn btn-primary w-50"
-            disabled={Object.keys(errorState).length !== 0 && !found ? true : false}
+            disabled={
+              Object.keys(errorState).length !== 0 && !found ? true : false
+            }
           >
             Create
           </button>

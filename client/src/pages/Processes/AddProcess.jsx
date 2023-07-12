@@ -12,6 +12,7 @@ function AddProcess() {
   const [endDate, setEndDate] = useState(new Date());
   const [errorState, setErrorState] = useState({});
   const [procesItem, setProcessItem] = useState({});
+  const [found, setFound] = useState(false);
   const [formState, setFormState] = useState({
     processName: "",
     end_date: endDate || "",
@@ -48,14 +49,17 @@ function AddProcess() {
           "http://localhost:3001/api/processItems/" + formState.processItemId
         )
         .then((response) => {
-          console.log(response.data.processItem);
+          //console.log(response.data.processItem);
           setProcessItem(response.data.processItem);
+          setFound(true);
         })
         .catch((error) => {
           console.log(error.message);
+          setFound(false);
         });
     } else {
-      console.log("id not set");
+      setFound(false);
+      //console.log("id not set");
     }
   };
 
@@ -68,21 +72,25 @@ function AddProcess() {
       processItemId: formState.processItemId,
       processItem: procesItem,
     };
-    console.log(data);
+    //console.log(data);
     setErrorState(validate(formState));
-    console.log(errorState);
+    //console.log(errorState);
     if (Object.keys(errorState).length === 0) {
       console.log("fetching apiii.....");
       await axios
         .post("http://localhost:3001/api/processes/create", data)
         .then((response) => {
-          console.log(response);
+          //console.log(response);
           resetAll();
           navigate("/home/processes");
         })
         .catch((error) => {
-          console.log(error.response.data.error);
-          toast.error(error.response.data.error);
+          if (error.response.status === 500) {
+            toast.error("Process item not found or error occured");
+          } else {
+            console.log(error.response.data.message);
+            toast.error(error.response.data.message);
+          }
         });
     } else {
       console.log("Error while creating supplier");
@@ -134,6 +142,18 @@ function AddProcess() {
             placeholder="ex. 1"
             onChange={handleChange}
           />
+          {found ? (
+            <p className="form-label text-info">
+              Process details:{" "}
+              {procesItem.amount +
+                " " +
+                procesItem.material.unitMeasure +
+                " " +
+                procesItem.material.materialName}
+            </p>
+          ) : (
+            <p className="form-label text-danger">Process item not found</p>
+          )}
         </div>
         <div className="row mx-auto">
           <div className="col-6">
@@ -165,23 +185,14 @@ function AddProcess() {
             />
           </div>
         </div>
-        {/* <div className="form-check">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            value=""
-            id="flexCheckChecked"
-          />
-          <label className="form-check-label" htmlFor="flexCheckChecked">
-            Checked checkbox
-          </label>
-        </div> */}
 
         <div className="col-12 text-center mb-3">
           <button
             type="submit"
             className="btn btn-primary w-50"
-            disabled={Object.keys(errorState).length !== 0 ? true : false}
+            disabled={
+              Object.keys(errorState).length !== 0 && !found ? true : false
+            }
           >
             Create
           </button>

@@ -42,7 +42,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Welcome />} />
-            <Route path="/registration/admin" element={<Registration />} />
+            <Route path="/registration/admin" element={<Registration props={"admin"} />} />
             <Route path="/login" element={<Login />} />
             <Route element={<AuthRoutes />}>
               <Route path="/home" element={<Home />}>

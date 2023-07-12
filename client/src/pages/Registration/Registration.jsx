@@ -1,11 +1,14 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
+import Cookies from "js-cookie"
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../helpers/AuthProvider";
 
-function Registration() {
+function Registration({ props }) {
+  const { setIsLogged } = useAuth();
   const [formState, setFormState] = useState({
     username: "",
     password: "",
@@ -62,25 +65,64 @@ function Registration() {
     //console.log(errorState);
     if (Object.keys(errorState).length === 0) {
       console.log("fetching apiii.....");
-      //there are second route ../register with isAdmin validation 
-      await axios
-        .post("http://localhost:3001/api/users/register/admin", data)
-        .then((response) => {
-          toast.success("Registration successfull");
-          navigate("/")
-        })
-        .catch((error) => {
-          if (error.response.data.error === 1062) {
-            toast.error("User with that email already exists!");
-          } else {
-            console.log(error.response.data.error);
-            toast.error(error.response.data.error);
-          }
-        });
+      //there are second route ../register with isAdmin validation
+      if (props === "admin") {
+        console.log("fetching admin.....");
+        await axios
+          .post("http://localhost:3001/api/users/register/admin", data)
+          .then((response) => {
+            toast.success("Registration successfull");
+            navigate("/");
+          })
+          .catch((error) => {
+            if (error.response.data.error === 1062) {
+              toast.error("User with that email already exists!");
+            } else {
+              console.log(error.response.data.error);
+              toast.error(error.response.data.error);
+            }
+          });
+      } else {
+        console.log("fetching user.....");
+        await axios
+          .post("http://localhost:3001/api/users/register", data, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            toast.success("Registration successfull");
+            logout();
+            //navigate("/home")
+          })
+          .catch((error) => {
+            if (error.response.data.error === 1062) {
+              toast.error("User with that email already exists!");
+            } else {
+              console.log(error.response.data.error);
+              toast.error(error.response.data.error);
+            }
+          });
+      }
     } else {
       console.log("Error while creating user");
     }
   };
+
+  const logout = async () => {
+    await axios
+      .get("http://localhost:3001/api/users/logout", { withCredentials: true })
+      .then((response) => {
+        console.log(response);
+        
+        Cookies.remove("userRole");
+        Cookies.remove("userId");
+        setIsLogged(false);
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
   const validate = (values) => {
     const errors = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
@@ -126,8 +168,8 @@ function Registration() {
               <div className="row g-0">
                 <div className="col-xl-6 my-auto p-2 d-none d-xl-block">
                   <img
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZW1wbG95ZWV8ZW58MHx8MHx8fDA%3D&w=1000&q=80"
-                    alt="Sample"
+                    src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80"
+                    alt="..."
                     className="img-fluid"
                   />
                 </div>

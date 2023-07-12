@@ -1,4 +1,4 @@
-import { Link, Routes, useNavigate, Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 function Navigation({ props, addons }) {
   return (
@@ -44,7 +44,7 @@ function Navigation({ props, addons }) {
                 aria-selected="false"
                 data-toggle="tab"
               >
-              {addons + "s"} List
+                {addons + "s"} List
               </Link>
             </li>
             <li className="nav-item">

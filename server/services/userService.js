@@ -74,11 +74,11 @@ exports.signup = async (req, res) => {
         message: "User successfully created",
         user: newUser.username,
         role: newUser.role,
-        token: token,
+         token: token,
       });
     } catch (error) {
       await transactions.rollback();
-      res.status(500).json({ error: error.parent.errno });
+      res.status(500).json({ error: error.message });
     }
   } else {
     await transactions.rollback();

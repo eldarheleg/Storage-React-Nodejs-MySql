@@ -31,8 +31,8 @@ exports.create = async (req, res) => {
       });
     } catch (error) {
       await transactions.rollback();
-      console.error(error);
-      res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
     }
   } else {
     res.status(500).json({ message: "Process with that id doesn't exist!" });

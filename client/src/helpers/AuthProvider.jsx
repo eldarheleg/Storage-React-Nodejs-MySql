@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, useMemo } from "react";
+import { createContext, useContext, useState, useMemo } from "react";
+import Cookies from "js-cookie"
 
 const AuthContext = createContext(null);
 
@@ -7,7 +8,7 @@ export function useAuth() {
 }
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("accessToken"));
+  const [token, setToken] = useState(Cookies.get("jwt"));
   const [isLogged, setIsLogged] = useState(token ? true : false);
 
   const setTokenFun = (newToken) => {

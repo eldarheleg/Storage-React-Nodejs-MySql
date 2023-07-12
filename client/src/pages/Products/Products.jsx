@@ -52,13 +52,13 @@ function Products() {
                       <td>
                         <img
                           src={product.productImage}
-                          className="img-thumbnail rounded-pill" 
+                          className="img-thumbnail rounded-pill product"
                           alt="..."
                         />
                       </td>
 
-                      <td>{product.profitMargin*100+"%"}</td>
-                      <td>{product.productPrice.toFixed(2)+"$"}</td>
+                      <td>{product.profitMargin * 100 + "%"}</td>
+                      <td>{product.productPrice.toFixed(2) + "$"}</td>
 
                       {/* <td className="text-center">
                         <Link

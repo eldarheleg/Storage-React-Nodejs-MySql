@@ -37,6 +37,7 @@ const isAdmin = async (req, res, next) => {
         .status(401)
         .json({ message: "2 You are not authorized for this route." });
     } else {
+      console.log(decodedToken)
       if (decodedToken.role !== "ADMIN") {
         return res
           .status(401)

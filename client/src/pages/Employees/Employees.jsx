@@ -6,8 +6,6 @@ import { ToastContainer, toast } from "react-toastify";
 
 function Employees() {
   const [employees, setEmployees] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [errors, setErrors] = useState("");
 
   useEffect(() => {
     fetchEmployees();
@@ -25,7 +23,6 @@ function Employees() {
       })
       .catch((error) => {
         console.log(error.response.data.message);
-        setErrors(error.response.data.message);
         toast.error(error.response.data.message);
       });
   };

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../helpers/AuthProvider";
+import Cookies from "js-cookie";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
@@ -31,9 +32,12 @@ function Login() {
       })
       .then((response) => {
         let resData = response.data;
-        localStorage.setItem("accessToken", resData.token);
-        localStorage.setItem("userRole", resData.role);
-        localStorage.setItem("userId", resData.employeeId);
+        //Cookies.set("accessToken", resData.token)
+        Cookies.set("userRole", resData.role);
+        Cookies.set("userId", resData.employeeId);
+        // localStorage.setItem("accessToken", resData.token);
+        // localStorage.setItem("userRole", resData.role);
+        // localStorage.setItem("userId", resData.employeeId);
 
         setTokenFun(resData.token);
         setIsLogged(true);
@@ -93,12 +97,6 @@ function Login() {
                 <button type="submit" className="btn btn-primary btn-lg">
                   Login
                 </button>
-                {/* <p className="small fw-bold mt-2 pt-1 mb-0">
-                  Don't have an account?{" "}
-                  <Link to={"/registration"} className="link-danger">
-                    Register
-                  </Link>
-                </p> */}
               </div>
             </form>
           </div>

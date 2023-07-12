@@ -1,7 +1,9 @@
 import { Link, useNavigate, Outlet } from "react-router-dom";
 import axios from "axios";
+
 import { useEffect, useState } from "react";
 import { useAuth } from "../../helpers/AuthProvider";
+import Cookies from "js-cookie"
 
 function Home() {
   const { setIsLogged } = useAuth();
@@ -9,7 +11,7 @@ function Home() {
   const [role, setRole] = useState("");
 
   useEffect(() => {
-    const roleLocal = localStorage.getItem("userRole");
+    const roleLocal = Cookies.get("userRole");
     setRole(roleLocal);
   }, []);
 
@@ -18,8 +20,9 @@ function Home() {
       .get("http://localhost:3001/api/users/logout", { withCredentials: true })
       .then((response) => {
         console.log(response);
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("userRole");
+        //Cookies.remove("jwt");
+        Cookies.remove("userRole");
+        Cookies.remove("userId");
         setIsLogged(false);
         navigate("/");
       })

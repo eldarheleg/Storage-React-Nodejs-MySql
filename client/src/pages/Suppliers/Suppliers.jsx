@@ -5,7 +5,7 @@ import "./index.css";
 
 function Supplires() {
   const [suppliers, setSuppliers] = useState([]);
-  
+
   useEffect(() => {
     fetchSuppliers();
   }, []);
