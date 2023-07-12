@@ -31,7 +31,6 @@ exports.signup = async (req, res) => {
     where: {
       username: username,
     },
-    //transaction: transactions,
   });
 
   if (!existUser) {
@@ -46,7 +45,7 @@ exports.signup = async (req, res) => {
           phoneNumber,
           start_date: today,
         },
-        { transactions }
+        { transaction: transactions }
       );
       const newUser = await User.create(
         {
@@ -55,7 +54,7 @@ exports.signup = async (req, res) => {
           role,
           employeeId: newEmployee.id,
         },
-        { transactions }
+        { transaction: transactions }
       );
 
       //then create token for reg user
@@ -69,18 +68,17 @@ exports.signup = async (req, res) => {
         maxAge: maxAge * 1000, // 3hrs in ms
       });
 
+      await transactions.commit();
+
       res.status(201).json({
         message: "User successfully created",
         user: newUser.username,
         role: newUser.role,
         token: token,
       });
-
-      await transactions.commit();
     } catch (error) {
-      console.error("Error creating User:", error.parent.sqlMessage);
-      res.status(500).json({ error: error.parent.errno });
       await transactions.rollback();
+      res.status(500).json({ error: error.parent.errno });
     }
   } else {
     await transactions.rollback();
@@ -135,13 +133,16 @@ exports.logout = async (req, res) => {
 exports.updatePassword = async (req, res) => {
   const { id } = req.params;
   const { currentPass, newPass } = req.body;
-  //console.log(id, currentPass, newPass);
+  let transactions = await db.sequelize.transaction();
+
   const existUser = await User.findOne({
     where: {
       employeeId: id,
     },
   });
+
   if (!existUser) res.status(404).json({ message: "User not found" });
+
   try {
     const isPasswordValid = await bcrypt.compare(
       currentPass,
@@ -155,13 +156,18 @@ exports.updatePassword = async (req, res) => {
         {
           password: await bcrypt.hash(newPass, 10),
         },
-        { where: { employeeId: id } }
+        { where: { employeeId: id } },
+        { transaction: transactions }
       );
+
+      await transactions.commit();
+
       res
         .status(200)
         .json({ message: "Password updated successfully", updated });
     }
   } catch (error) {
+    await transactions.rollback();
     res.status(500).json({ message: "failed to update pass" });
   }
 };

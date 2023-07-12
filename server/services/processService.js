@@ -20,20 +20,20 @@ exports.create = async (req, res) => {
           processPrice: processItem.material.price * processItem.amount,
           processItemId: processItemId,
         },
-        { transactions }
+        { transaction: transactions }
       );
 
+      await transactions.commit();
       res.status(201).json({
         message: "Process successfully created",
         process: newProcess,
       });
-      await transactions.commit();
     } catch (error) {
+      await transactions.rollback();
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
     }
   } else {
-    await transactions.rollback();
     res.status(500).json({ error: "Process already exists" });
   }
 };
@@ -60,12 +60,12 @@ exports.getSingle = async (req, res) => {
   const id = req.params.id;
   let process;
   try {
-    process = await Product.findByPk(id);
+    process = await Process.findByPk(id);
   } catch (err) {
-    return console.log(err);
+    return res.status(500).json({ message: err.message });
   }
   if (!process) {
-    return res.status(404).json({ message: "No product found" });
+    return res.status(404).json({ message: "No process found" });
   }
   return res.status(200).json({ process });
 };

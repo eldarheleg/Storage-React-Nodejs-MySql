@@ -27,6 +27,8 @@ import AddProcess from "./pages/Processes/AddProcess";
 import EditProcess from "./pages/Processes/EditProcess";
 import ProcessItems from "./pages/Processes/ProcessItems";
 import AddProcessItem from "./pages/Processes/AddProcessItem";
+import AddProduct from "./pages/Products/AddProduct";
+import EditProduct from "./pages/Products/EditProduct";
 
 const ROLES = {
   user: "USER",
@@ -46,6 +48,7 @@ function App() {
               <Route path="/home" element={<Home />}>
                 <Route path="" element={<Dashboard />} />
                 <Route path="profile" element={<Profile />} />
+
                 <Route
                   path="employees"
                   element={<Navigation props={"Employee"} />}
@@ -53,8 +56,16 @@ function App() {
                   <Route path="" element={<Employees />} />
                   <Route path="changepass/:id" element={<EditEmployee />} />
                 </Route>
-                
-                <Route path="products" element={<Products />} />
+
+                <Route
+                  path="products"
+                  element={<Navigation props={"Product"} />}
+                >
+                  <Route path="" element={<Products />} />
+                  <Route path="create" element={<AddProduct />} />
+                  <Route path="update/:id" element={<EditProduct />} />
+                </Route>
+
                 <Route
                   path="materials"
                   element={<Navigation props={"Material"} />}
@@ -63,17 +74,23 @@ function App() {
                   <Route path="create" element={<AddMaterial />} />
                   <Route path="update/:id" element={<EditMaterial />} />
                 </Route>
+
                 <Route
                   path="processes"
-                  element={<Navigation props={"Process"} addons={"Process Item"} />}
+                  element={
+                    <Navigation props={"Process"} addons={"Process Item"} />
+                  }
                 >
                   <Route path="" element={<Processes />} />
                   <Route path="create" element={<AddProcess />} />
                   {/* <Route path="update/:id" element={<EditProcess />} /> */}
                   <Route path="processItems" element={<ProcessItems />} />
-                  <Route path="processItems/create" element={<AddProcessItem />} />
+                  <Route
+                    path="processItems/create"
+                    element={<AddProcessItem />}
+                  />
                 </Route>
-                <Route path="processes" element={<Processes />} />
+
                 <Route
                   path="suppliers"
                   element={<Navigation props={"Supplier"} />}
@@ -82,6 +99,7 @@ function App() {
                   <Route path="create" element={<AddSupplier />} />
                   <Route path="update/:id" element={<EditSupplier />} />
                 </Route>
+
                 <Route element={<ProtectedRoute allowedRole={ROLES.admin} />}>
                   <Route path="registration" element={<Registration />} />
                 </Route>

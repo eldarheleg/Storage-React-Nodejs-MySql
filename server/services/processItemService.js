@@ -1,9 +1,7 @@
 const db = require("../models/connection");
-const material = require("../models/material");
 const Product = db.product;
-const Process = db.process;
 const ProcessItem = db.processItem;
-const Material = db.material
+const Material = db.material;
 
 exports.create = async (req, res) => {
   const { amount, materialId } = req.body;
@@ -14,13 +12,14 @@ exports.create = async (req, res) => {
         amount,
         materialId,
       },
-      { transactions }
+      { transaction: transactions }
     );
-      await transactions.commit();
-      res.status(201).json({
-        message: "ProcessItem successfully created",
-        processItem: newProcessItem,
-      });
+
+    await transactions.commit();
+    res.status(201).json({
+      message: "ProcessItem successfully created",
+      processItem: newProcessItem,
+    });
   } catch (error) {
     await transactions.rollback();
     console.error(error);
@@ -50,7 +49,7 @@ exports.getSingle = async (req, res) => {
   const id = req.params.id;
   let processItem;
   try {
-    processItem = await ProcessItem.findByPk(id,{include: Material});
+    processItem = await ProcessItem.findByPk(id, { include: Material });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -63,7 +62,7 @@ exports.getSingle = async (req, res) => {
 exports.getAll = async (req, res) => {
   let processItems;
   try {
-    processItems = await ProcessItem.findAll({include: Material});
+    processItems = await ProcessItem.findAll({ include: Material });
     return res.status(200).json({ processItems });
   } catch (err) {
     return res.status(500).json({ message: err.message });

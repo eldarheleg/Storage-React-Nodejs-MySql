@@ -28,6 +28,7 @@ function Processes() {
           <table className="table">
             <thead>
               <tr>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Start date</th>
                 <th>End date</th>
@@ -48,6 +49,7 @@ function Processes() {
                   const ed = new Date(process.end_date).toLocaleString();
                   return (
                     <tr key={process.id}>
+                      <td>{process.id}</td>
                       <td>{process.processName}</td>
                       <td>{sd}</td>
                       <td>{ed}</td>

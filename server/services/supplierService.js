@@ -1,9 +1,8 @@
 const db = require("../models/connection");
 const { Op } = require("sequelize");
-const Product = db.product;
 const Supplier = db.supplier;
 
-exports.createSupplier = async (req, res) => {
+exports.create = async (req, res) => {
   const { supplierName, jib, pib, phoneNumber, contactPerson, supplierEmail } =
     req.body;
   let transactions = await db.sequelize.transaction();
@@ -14,7 +13,6 @@ exports.createSupplier = async (req, res) => {
     where: {
       [Op.or]: [{ supplierEmail: supplierEmail }, { jib: jib }, { pib: pib }],
     },
-    //transaction: transactions,
   });
   if (!existSupplier) {
     try {
@@ -28,10 +26,9 @@ exports.createSupplier = async (req, res) => {
           supplierEmail,
           start_date: today,
         },
-        { transactions }
+        { transaction: transactions }
       );
 
-      //console.log(newSupplier)
       await transactions.commit();
       res.status(201).json({
         message: "Supplier successfully created",
@@ -40,17 +37,14 @@ exports.createSupplier = async (req, res) => {
     } catch (error) {
       await transactions.rollback();
       console.error(error.message);
-      res
-        .status(500)
-        .json({ message: "Internal server error - " + error.message });
+      res.status(500).json({ message: error.message });
     }
   } else {
-    await transactions.rollback();
     res.status(500).json({ error: "Supplier already exists" });
   }
 };
 
-exports.updateSupplier = async (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
   const data = req.body;
   let transactions = await db.sequelize.transaction();
@@ -61,18 +55,17 @@ exports.updateSupplier = async (req, res) => {
     const updated = await Supplier.update(
       data,
       { where: { id: id } },
-      { transactions }
+      { transaction: transactions }
     );
     await transactions.commit();
     return res.status(201).json({ updated });
   } catch (error) {
-    console.log(error);
     await transactions.rollback();
     return res.status(400).json({ message: error.message });
   }
 };
 
-exports.getSingleSupplier = async (req, res) => {
+exports.getSingle = async (req, res) => {
   const id = req.params.id;
   let supplier;
   try {
@@ -87,7 +80,7 @@ exports.getSingleSupplier = async (req, res) => {
   }
 };
 
-exports.getAllSuppliers = async (req, res) => {
+exports.getAll = async (req, res) => {
   let suppliers;
   try {
     suppliers = await Supplier.findAll();

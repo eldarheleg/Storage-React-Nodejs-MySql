@@ -2,7 +2,7 @@ const db = require("../models/connection");
 const Supplier = db.supplier;
 const Material = db.material;
 
-exports.createMaterial = async (req, res) => {
+exports.create = async (req, res) => {
   const {
     materialName,
     quantity,
@@ -12,7 +12,7 @@ exports.createMaterial = async (req, res) => {
     inUse,
     supplierName,
   } = req.body;
-  //console.log(price + "price err");
+  
   let transactions = await db.sequelize.transaction();
   const today = new Date();
 
@@ -25,7 +25,6 @@ exports.createMaterial = async (req, res) => {
 
   if (!matchSupplier) res.status(404).json({ error: "Supplier not found" });
 
-  //console.log(matchSupplier)
   const existMaterial = await Material.findOne({
     where: {
       materialName: materialName,
@@ -44,10 +43,9 @@ exports.createMaterial = async (req, res) => {
           inUse,
           supplierId: matchSupplier.id,
         },
-        { transactions }
+        { transaction: transactions }
       );
 
-      //console.log(newMaterial);
       await transactions.commit();
       res.status(201).json({
         message: "Material successfully created",
@@ -56,7 +54,6 @@ exports.createMaterial = async (req, res) => {
       });
     } catch (error) {
       await transactions.rollback();
-      console.error(error.message);
       res.status(500).json({
         message: "Internal server error",
       });
@@ -67,7 +64,7 @@ exports.createMaterial = async (req, res) => {
   }
 };
 
-exports.updateMaterial = async (req, res) => {
+exports.update = async (req, res) => {
   const id = req.params.id;
   const data = req.body;
   let transactions = await db.sequelize.transaction();
@@ -89,7 +86,7 @@ exports.updateMaterial = async (req, res) => {
   }
 };
 
-exports.getSingleMaterial = async (req, res) => {
+exports.getSingle = async (req, res) => {
   const id = req.params.id;
   let material;
   try {
@@ -103,7 +100,7 @@ exports.getSingleMaterial = async (req, res) => {
   return res.status(200).json({ material });
 };
 
-exports.getAllMaterials = async (req, res) => {
+exports.getAll = async (req, res) => {
   let materials;
   try {
     materials = await Material.findAll();

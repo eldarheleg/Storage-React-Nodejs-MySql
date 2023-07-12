@@ -3,9 +3,9 @@ const router = express.Router();
 const materialService = require("../services/materialService");
 
 
-router.post("/create", materialService.createMaterial);
-router.patch("/update/:id", materialService.updateMaterial);
-router.get("/", materialService.getAllMaterials);
-router.get("/:id", materialService.getSingleMaterial);
+router.post("/create", materialService.create);
+router.patch("/update/:id", materialService.update);
+router.get("/", materialService.getAll);
+router.get("/:id", materialService.getSingle);
 
 module.exports = router;

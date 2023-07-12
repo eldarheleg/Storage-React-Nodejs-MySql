@@ -3,9 +3,9 @@ const router = express.Router();
 const supplierService = require("../services/supplierService");
 
 
-router.post("/create", supplierService.createSupplier);
-router.patch("/update/:id", supplierService.updateSupplier);
-router.get("/", supplierService.getAllSuppliers);
-router.get("/:id", supplierService.getSingleSupplier);
+router.post("/create", supplierService.create);
+router.patch("/update/:id", supplierService.update);
+router.get("/", supplierService.getAll);
+router.get("/:id", supplierService.getSingle);
 
 module.exports = router;

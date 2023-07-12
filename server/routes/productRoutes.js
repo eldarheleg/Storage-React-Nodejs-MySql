@@ -3,9 +3,9 @@ const router = express.Router();
 const productService = require("../services/productService");
 
 
-router.post("/", productService.createProduct);
-router.patch("/:id", productService.updateProduct);
-router.get("/", productService.getAllProducts);
-router.get("/:id", productService.getSingleProduct);
+router.post("/create", productService.create);
+router.patch("/:id", productService.update);
+router.get("/", productService.getAll);
+router.get("/:id", productService.getSingle);
 
 module.exports = router;
