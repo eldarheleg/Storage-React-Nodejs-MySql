@@ -1,4 +1,4 @@
-const dbConfig = require("../config/dbConfig.json");
+const dbConfig = require("../config/dbConfig.js");
 const mysql = require("mysql2/promise");
 
 const Sequelize = require("sequelize");
